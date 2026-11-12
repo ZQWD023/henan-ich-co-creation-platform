@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>环境自检 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-stethoscope"></i> 环境自检</h1>
+            <p>页面打不开、数据不显示？打开这一页，逐项告诉你哪里断了。</p>
+        </div>
+    </div>
+
+    <div class="container" style="margin-bottom:3rem;">
+        <div class="breadcrumb">
+            <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">环境自检</span>
+        </div>
+        <div id="diag-root"></div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <style>
+        .dg-item{display:flex;gap:.9rem;align-items:flex-start;padding:.9rem 1rem;border:1px solid var(--border);border-radius:var(--radius);background:#fff;margin-bottom:.7rem;}
+        .dg-item.ok{border-color:rgba(47,143,95,.35);background:rgba(47,143,95,.04);}
+        .dg-item.bad{border-color:rgba(176,36,90,.35);background:rgba(176,36,90,.04);}
+        .dg-item.warn{border-color:rgba(208,138,46,.35);background:rgba(208,138,46,.05);}
+        .dg-icon{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;margin-top:.1rem;}
+        .dg-item.ok .dg-icon{background:var(--success);}
+        .dg-item.bad .dg-icon{background:var(--danger);}
+        .dg-item.warn .dg-icon{background:var(--warning);}
+        .dg-body{flex:1;min-width:0;}
+        .dg-title{font-weight:600;font-size:.92rem;color:var(--ink);margin-bottom:.2rem;}
+        .dg-desc{font-size:.84rem;color:var(--ink-3);line-height:1.6;word-break:break-all;}
+        .dg-desc code{background:var(--paper-2);padding:.05rem .35rem;border-radius:4px;font-size:.8rem;}
+        .dg-fix{margin-top:.5rem;font-size:.82rem;color:var(--ink-3);background:var(--paper);border-left:3px solid var(--gold);padding:.5rem .7rem;border-radius:4px;line-height:1.65;}
+    </style>
+
+    <script src="../js/data.js?v=v4"></script>
+    <script src="../js/script.js?v=v4"></script>
+    <script src="../js/api.js?v=v4"></script>
+    <script src="../js/diagnose.js?v=v4"></script>
+</body>
+</html>

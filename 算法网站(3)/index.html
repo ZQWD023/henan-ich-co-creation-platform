@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>河南省非物质文化遗产共创平台</title>
+    <meta name="description" content="河南省非物质文化遗产共创平台，展示豫剧、少林功夫、太极拳、钧瓷、汴绣等中原非遗，搭建传承人与公众的共创桥梁。">
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="stylesheet" href="css/style.css?v=v4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="container">
+        <a class="home-ai-link" href="html/ai-chat.html">
+            <span class="home-ai-icon" aria-hidden="true"><i class="fas fa-comments"></i></span>
+            <span class="home-ai-copy">
+                <strong>AI 非遗问答</strong>
+                <span>了解豫剧、钧瓷和更多河南非遗</span>
+            </span>
+            <span class="home-ai-action">开始提问 <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+        </a>
+    </div>
+
+    <!-- 轮播图 -->
+    <div class="container">
+        <section class="carousel-container">
+            <div class="carousel-slide">
+                <div class="carousel-item" style="background-image: linear-gradient(90deg, rgba(15,23,42,.90) 0%, rgba(15,23,42,.66) 42%, rgba(15,23,42,.22) 100%), url('img/hero/shaolin.jpg'); background-color: #1f3a5f;">
+                    <div class="carousel-inner">
+                        <span class="carousel-badge"><i class="fas fa-hand-fist"></i> 传统体育·武术</span>
+                        <h2>少林功夫</h2>
+                        <p>禅武合一，天下武功出少林。嵩山少林寺以千年底蕴孕育的中华武术瑰宝，名扬四海。</p>
+                        <a href="html/project-detail.html?id=shaolin-kungfu" class="btn btn-gold">走进少林 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="carousel-item" style="background-image: linear-gradient(90deg, rgba(15,23,42,.90) 0%, rgba(15,23,42,.66) 42%, rgba(15,23,42,.22) 100%), url('img/hero/yuju.jpg'); background-color: #7c1a21;">
+                    <div class="carousel-inner">
+                        <span class="carousel-badge"><i class="fas fa-masks-theater"></i> 传统戏剧</span>
+                        <h2>豫剧</h2>
+                        <p>中国第一大地方剧种，唱腔铿锵大气、韵味醇厚。《花木兰》《穆桂英挂帅》传唱大江南北。</p>
+                        <a href="html/project-detail.html?id=yuju" class="btn btn-gold">感受豫剧 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="carousel-item" style="background-image: linear-gradient(90deg, rgba(15,23,42,.90) 0%, rgba(15,23,42,.66) 42%, rgba(15,23,42,.22) 100%), url('img/hero/taiji.jpg'); background-color: #2f5f52;">
+                    <div class="carousel-inner">
+                        <span class="carousel-badge"><i class="fas fa-spa"></i> 人类非遗</span>
+                        <h2>太极拳</h2>
+                        <p>源于温县陈家沟的内家拳术，刚柔相济、养生怡情。2020年入选人类非物质文化遗产代表作名录。</p>
+                        <a href="html/project-detail.html?id=chenshi-taiji" class="btn btn-gold">探秘太极 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+                <div class="carousel-item" style="background-image: linear-gradient(90deg, rgba(15,23,42,.90) 0%, rgba(15,23,42,.66) 42%, rgba(15,23,42,.22) 100%), url('img/hero/junci.jpg'); background-color: #3f7c6b;">
+                    <div class="carousel-inner">
+                        <span class="carousel-badge"><i class="fas fa-fire"></i> 传统技艺</span>
+                        <h2>钧瓷</h2>
+                        <p>「入窑一色，出窑万彩」。禹州神垕的窑变艺术，中国五大名瓷之一，釉色瑰丽无双。</p>
+                        <a href="html/project-detail.html?id=junci" class="btn btn-gold">赏钧瓷 <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-control next-btn"><i class="fas fa-chevron-right"></i></button>
+            <div class="carousel-indicators">
+                <span class="indicator active"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+                <span class="indicator"></span>
+            </div>
+        </section>
+    </div>
+
+    <!-- 数据统计 -->
+    <div class="container section">
+        <div class="stats-strip" id="stats-strip"></div>
+    </div>
+
+    <!-- 非遗分类 -->
+    <div class="container section">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-shapes"></i> 非遗十大分类</h2>
+            <a href="html/projects.html" class="section-more">全部项目 <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="category-grid" id="category-grid"></div>
+    </div>
+
+    <!-- 精选非遗项目 -->
+    <div class="container section">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-star"></i> 精选非遗项目</h2>
+            <a href="html/projects.html" class="section-more">查看全部 <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="project-grid" id="featured-projects"></div>
+    </div>
+
+    <!-- 共创广场 -->
+    <div class="container section">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-lightbulb"></i> 共创作品精选</h2>
+            <a href="html/co-create.html" class="section-more">进入共创广场 <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="project-grid" id="home-works"></div>
+    </div>
+
+    <!-- 活动资讯 -->
+    <div class="container section">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-calendar-days"></i> 活动预告</h2>
+            <a href="html/events.html" class="section-more">更多活动 <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="home-events"></div>
+    </div>
+
+    <!-- 最新资讯 -->
+    <div class="container section" style="padding-bottom: 3rem;">
+        <div class="section-head">
+            <h2 class="section-title"><i class="fas fa-newspaper"></i> 非遗资讯</h2>
+            <a href="html/events.html" class="section-more">全部资讯 <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div id="home-news"></div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <script src="js/data.js?v=v4"></script>
+    <script src="js/script.js?v=v4"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            renderSiteHeader('home');
+            renderSiteFooter();
+            renderHome();
+        });
+
+        function renderHome() {
+            // 统计
+            const s = ICH.getStats();
+            document.getElementById('stats-strip').innerHTML = `
+                <div class="stat-cell"><div class="num">${s.total}<span>+</span></div><div class="lbl">非遗项目</div></div>
+                <div class="stat-cell"><div class="num">${s.national}</div><div class="lbl">国家级项目</div></div>
+                <div class="stat-cell"><div class="num">${s.inheritors}<span>+</span></div><div class="lbl">代表性传承人</div></div>
+                <div class="stat-cell"><div class="num">${s.works}<span>+</span></div><div class="lbl">共创作品</div></div>
+                <div class="stat-cell"><div class="num">10</div><div class="lbl">非遗分类</div></div>`;
+
+            // 分类
+            document.getElementById('category-grid').innerHTML = ichCategories.map(c => `
+                <a class="category-card" href="html/projects.html?category=${c.id}">
+                    <div class="cat-icon" style="background: linear-gradient(135deg, ${c.color}, ${c.color}cc);"><i class="fas ${c.icon}"></i></div>
+                    <h3>${c.name}</h3>
+                    <p>${c.description}</p>
+                </a>`).join('');
+
+            // 精选项目
+            document.getElementById('featured-projects').innerHTML = ICH.getFeaturedProjects(6).map(p => projectCard(p)).join('');
+
+            // 共创作品
+            document.getElementById('home-works').innerHTML = coCreateWorks.slice(0, 3).map(w => workCard(w)).join('');
+
+            // 活动
+            document.getElementById('home-events').innerHTML = events.slice(0, 3).map(e => `
+                <div class="list-row">
+                    <div class="list-icon"><i class="fas ${e.icon}"></i></div>
+                    <div class="list-content">
+                        <h3>${e.title}</h3>
+                        <p class="summary">${e.desc}</p>
+                        <div class="list-meta">
+                            <span><i class="fas fa-calendar"></i> ${e.date}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> ${e.location}</span>
+                            <span class="status-badge status-${e.status}">${e.status}</span>
+                        </div>
+                    </div>
+                </div>`).join('');
+
+            // 资讯
+            document.getElementById('home-news').innerHTML = news.slice(0, 4).map(n => `
+                <div class="list-row">
+                    <div class="list-icon" style="background: linear-gradient(135deg, var(--blue), var(--jade));"><i class="fas fa-newspaper"></i></div>
+                    <div class="list-content">
+                        <h3>${n.title}</h3>
+                        <p class="summary">${n.summary}</p>
+                        <div class="list-meta">
+                            <span><i class="fas fa-calendar"></i> ${n.date}</span>
+                            <span><i class="fas fa-tag"></i> ${n.category}</span>
+                            <span><i class="fas fa-building"></i> ${n.source}</span>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        function projectCard(p) {
+            const cat = ICH.getCategory(p.category);
+            return `
+            <a class="project-card" href="html/project-detail.html?id=${p.id}">
+                ${coverHTML(p)}
+                <div class="project-body">
+                    <h3>${p.name}</h3>
+                    <div class="project-region"><i class="fas fa-map-marker-alt"></i> ${p.region} · ${cat ? cat.name : ''}</div>
+                    <p class="project-brief">${p.brief}</p>
+                    <div class="project-meta">
+                        <span><i class="fas fa-eye"></i> ${fmt(p.popularity)} 浏览</span>
+                        <span class="likes"><i class="fas fa-heart"></i> ${fmt(p.likes)}</span>
+                    </div>
+                </div>
+            </a>`;
+        }
+
+        function workCard(w) {
+            return `
+            <div class="work-card">
+                <div class="work-cover" style="${workCoverStyle(w)}"><span class="work-cat">${w.category}</span></div>
+                <div class="work-body">
+                    <h3>${w.title}</h3>
+                    <div class="work-author"><i class="fas fa-user-pen"></i> ${w.author}</div>
+                    <p class="work-desc">${w.desc}</p>
+                    <div class="work-tags">${w.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+                    <div class="work-actions">
+                        <button class="vote-btn" onclick="homeLike('${w.id}', this)"><i class="fas fa-thumbs-up"></i> <span>${w.votes}</span></button>
+                        <span class="likes"><i class="fas fa-heart"></i> ${w.likes}</span>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function homeLike(id, btn) {
+            const w = coCreateWorks.find(x => x.id === id);
+            if (!w) return;
+            const ok = toggleLike(id, w.title);
+            if (ok) {
+                const isNowLiked = isLiked(id);
+                w.votes += isNowLiked ? 1 : -1;
+                btn.querySelector('span').textContent = w.votes;
+                btn.classList.toggle('voted', isNowLiked);
+            }
+        }
+
+        function fmt(n) { return n >= 10000 ? (n / 10000).toFixed(1) + '万' : n; }
+    </script>
+</body>
+</html>

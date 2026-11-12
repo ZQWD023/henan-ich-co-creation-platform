@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非遗项目库 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-book-open"></i> 非遗项目库</h1>
+            <p>探寻中原大地千年文脉，领略豫剧、少林功夫、太极拳、钧瓷、汴绣等非遗项目的独特魅力。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current" id="crumb-category">非遗项目库</span>
+        </div>
+
+        <!-- 河南非遗分布地图 -->
+        <div class="map-section" id="henan-map"></div>
+
+        <!-- 搜索 -->
+        <div class="search-bar">
+            <input type="text" id="project-search" placeholder="搜索项目名称、地区、标签……">
+            <button class="btn" id="search-btn"><i class="fas fa-search"></i> 搜索</button>
+        </div>
+
+        <!-- 保护级别筛选 -->
+        <div class="filter-options" id="level-filters">
+            <button class="filter-btn active" data-level="all">全部级别</button>
+            <button class="filter-btn" data-level="国家级">国家级</button>
+            <button class="filter-btn" data-level="省级">省级</button>
+            <button class="filter-btn" data-level="市级">市级</button>
+            <button class="filter-btn" data-level="县级">县级</button>
+        </div>
+
+        <!-- 地区筛选 -->
+        <div class="filter-options" id="region-filters">
+            <button class="filter-btn active" data-region="all">全部地区</button>
+        </div>
+
+        <div class="project-grid" id="project-list" style="margin-bottom: 3rem;"></div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <script src="../js/data.js?v=v4"></script>
+    <script src="../js/script.js?v=v4"></script>
+    <script src="../js/projects.js?v=v4"></script>
+</body>
+</html>

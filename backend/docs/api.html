@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>河南省非遗共创平台 · API 文档</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    body { margin: 0; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    .topbar { display: none; }
+    .header-bar {
+      background: linear-gradient(135deg, #a3242c, #7c1a21);
+      color: #fff; padding: 18px 24px; font-size: 18px; font-weight: 600;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .header-bar small { font-weight: 400; opacity: .85; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div class="header-bar">
+    河南省非遗共创平台 · 后端 API
+    <small>RESTful · JWT · 统一响应 {code,message,data}</small>
+  </div>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        url: '/api-docs/openapi.json',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        defaultModelsExpandDepth: -1,
+        docExpansion: 'list',
+        persistAuthorization: true,
+        tryItOutEnabled: true,
+      });
+    };
+  </script>
+</body>
+</html>

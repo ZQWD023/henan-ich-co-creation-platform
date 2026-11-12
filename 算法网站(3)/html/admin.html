@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平台管理后台 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-shield-halved"></i> 平台管理后台</h1>
+            <p>内容审核 · 传承人认证 · 用户管理 · 数据看板</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">管理后台</span>
+        </div>
+
+        <div id="admin-root" style="margin-bottom:3rem;">
+            <div class="co-skeleton" style="height:150px;"></div>
+        </div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <style>
+        .ad-tabs{display:flex;gap:.25rem;border-bottom:2px solid var(--border);margin:0 0 1.6rem;overflow-x:auto;}
+        .ad-tab{padding:.75rem 1.15rem;font-size:.92rem;font-weight:600;color:var(--ink-3);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;font-family:inherit;transition:var(--transition);}
+        .ad-tab:hover{color:var(--primary);}
+        .ad-tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+        .ad-tab .num{display:inline-block;min-width:18px;padding:0 5px;margin-left:.35rem;border-radius:9px;background:var(--primary);color:#fff;font-size:.72rem;line-height:18px;text-align:center;}
+        .ad-panel{display:none;}
+        .ad-panel.active{display:block;}
+
+        .ad-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.8rem;}
+        .ad-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem 1.2rem;position:relative;overflow:hidden;transition:var(--transition);}
+        .ad-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--gold-light);}
+        .ad-card::after{content:'';position:absolute;right:-22px;top:-22px;width:70px;height:70px;border-radius:50%;background:var(--paper-2);opacity:.75;}
+        .ad-card .k{font-size:.78rem;color:var(--muted);position:relative;}
+        .ad-card .v{font-family:var(--font-serif);font-size:1.9rem;font-weight:700;color:var(--primary);line-height:1.15;position:relative;margin-top:.25rem;}
+        .ad-card .sub{font-size:.72rem;color:var(--muted);position:relative;margin-top:.2rem;}
+
+        .ad-box{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem 1.4rem;margin-bottom:1.4rem;}
+        .ad-box h3{font-family:var(--font-serif);font-size:1.05rem;color:var(--ink);margin:0 0 1rem;padding-bottom:.7rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.6rem;}
+        .ad-box h3 i{color:var(--gold);margin-right:.4rem;}
+
+        table.ad-table{width:100%;border-collapse:collapse;font-size:.86rem;}
+        table.ad-table th{text-align:left;padding:.6rem .5rem;color:var(--muted);font-weight:600;font-size:.8rem;border-bottom:1px solid var(--border);white-space:nowrap;}
+        table.ad-table td{padding:.7rem .5rem;border-bottom:1px dashed var(--border);vertical-align:middle;}
+        table.ad-table tr:last-child td{border-bottom:none;}
+        table.ad-table tr:hover td{background:var(--paper);}
+        .ad-actions{display:flex;gap:.35rem;flex-wrap:wrap;}
+        .ad-mini{display:flex;align-items:center;gap:.5rem;min-width:0;}
+        .ad-mini .nm{font-weight:600;color:var(--ink);}
+        .ad-mini .sub{font-size:.74rem;color:var(--muted);}
+
+        .ad-pager{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;margin-top:1rem;font-size:.82rem;color:var(--muted);}
+        .ad-filters{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;}
+        .ad-filters input,.ad-filters select{padding:.5rem .7rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.85rem;font-family:inherit;background:#fff;color:var(--ink);}
+        .ad-filters input:focus,.ad-filters select:focus{outline:none;border-color:var(--primary);}
+
+        .ad-chart{display:flex;align-items:flex-end;gap:1rem;height:150px;padding:1rem 0 .4rem;border-bottom:1px solid var(--border);}
+        .ad-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:.3rem;height:100%;justify-content:flex-end;}
+        .ad-bars{display:flex;align-items:flex-end;gap:3px;height:100%;width:100%;justify-content:center;}
+        .ad-bar{width:8px;border-radius:2px 2px 0 0;min-height:3px;transition:height .4s ease;}
+        .ad-day .lab{font-size:.7rem;color:var(--muted);white-space:nowrap;}
+        .ad-legend{display:flex;gap:1rem;font-size:.76rem;color:var(--muted);margin-top:.6rem;flex-wrap:wrap;}
+        .ad-legend span{display:inline-flex;align-items:center;gap:.3rem;}
+        .ad-legend i{width:9px;height:9px;border-radius:2px;display:inline-block;}
+        .ad-lock{text-align:center;padding:4rem 1rem;}
+        .ad-lock i{font-size:3rem;color:var(--paper-3);margin-bottom:1rem;display:block;}
+    </style>
+
+    <script src="../js/data.js?v=v4"></script>
+    <script src="../js/script.js?v=v4"></script>
+    <script src="../js/api.js?v=v4"></script>
+    <script src="../js/co-common.js?v=v4"></script>
+    <script src="../js/admin.js?v=v4"></script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共创项目 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v4">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-people-group"></i> 共创项目</h1>
+            <p>不是投稿，而是一起完成。发起一个项目，招募伙伴，拆分任务，提交成果，结项公示。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">共创项目</span>
+        </div>
+
+        <!-- 工具栏 -->
+        <div class="co-toolbar">
+            <div class="filter-options" id="status-filters">
+                <button class="filter-btn active" data-status="">全部项目</button>
+                <button class="filter-btn" data-status="recruiting">招募中</button>
+                <button class="filter-btn" data-status="in_progress">协作中</button>
+                <button class="filter-btn" data-status="reviewing">结项评审</button>
+                <button class="filter-btn" data-status="closed">已结项</button>
+            </div>
+            <div class="co-toolbar-right">
+                <div class="co-search">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="text" id="keyword" placeholder="搜索项目名称或招募要求…">
+                </div>
+                <select id="sort" class="co-input co-select">
+                    <option value="newest">最新发起</option>
+                    <option value="hot">最多关注</option>
+                    <option value="deadline">即将截止</option>
+                </select>
+                <button class="btn" id="create-btn"><i class="fas fa-plus"></i> 发起共创</button>
+            </div>
+        </div>
+
+        <!-- 我的快捷入口 -->
+        <div id="my-shortcut"></div>
+
+        <!-- 列表 -->
+        <div id="project-list" class="co-grid"></div>
+        <div id="load-more-wrap" style="text-align:center;margin:1.5rem 0 3rem;"></div>
+    </div>
+
+    <!-- 发起共创 模态框 -->
+    <div class="modal" id="create-modal">
+        <div class="modal-content" style="max-width:620px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-lightbulb"></i> 发起共创项目</h3>
+                <button class="modal-close" id="create-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="co-warn" style="margin-bottom:1rem;">
+                    <i class="fas fa-circle-info"></i> 发起项目需要「已认证传承人 / 创作者」身份。普通用户可以先申请加入别人的项目。
+                </div>
+                <form id="create-form">
+                    <div class="form-group">
+                        <label for="f-title">项目名称 <span style="color:var(--danger)">*</span></label>
+                        <input type="text" id="f-title" class="form-control" placeholder="例如：豫剧脸谱当代文创系列" maxlength="60" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-heritage">关联非遗项目</label>
+                        <select id="f-heritage" class="form-control">
+                            <option value="">不关联</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-desc">项目说明 <span style="color:var(--danger)">*</span></label>
+                        <textarea id="f-desc" class="form-control" rows="4" minlength="10" maxlength="3000"
+                            placeholder="说明主题、希望产出什么、为什么值得做（至少 10 个字）" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="f-need">招募要求</label>
+                        <textarea id="f-need" class="form-control" rows="2" maxlength="1000"
+                            placeholder="例如：视觉设计 1 名、文案 1 名，有相关作品优先"></textarea>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div class="form-group">
+                            <label for="f-limit">成员上限</label>
+                            <input type="number" id="f-limit" class="form-control" value="6" min="2" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label for="f-deadline">截止时间</label>
+                            <input type="date" id="f-deadline" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-actions" style="display:flex;gap:10px;">
+                        <button type="submit" class="btn" id="f-submit">发布并开始招募</button>
+                        <button type="button" class="btn btn-outline" id="create-cancel">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <style>
+        .co-toolbar{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+        .co-toolbar-right{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;}
+        .co-search{position:relative;}
+        .co-search i{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.85rem;}
+        .co-search input{width:230px;padding:.55rem .8rem .55rem 2.1rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;font-family:inherit;background:#fff;color:var(--ink);}
+        .co-search input:focus{outline:none;border-color:var(--primary);}
+        .co-select{width:auto;padding:.55rem .8rem;}
+        .co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem;}
+        .co-card-progress{display:flex;flex-direction:column;gap:.35rem;}
+        .co-card-foot{display:flex;align-items:center;justify-content:space-between;padding-top:.6rem;border-top:1px dashed var(--border);margin-top:auto;}
+        .co-shortcut{display:flex;align-items:center;gap:.75rem;background:var(--paper-2);border:1px dashed var(--gold-light);border-radius:var(--radius);padding:.8rem 1rem;margin-bottom:1.2rem;font-size:.88rem;color:var(--ink-3);flex-wrap:wrap;}
+    </style>
+
+    <script src="../js/data.js?v=v4"></script>
+    <script src="../js/script.js?v=v4"></script>
+    <script src="../js/api.js?v=v4"></script>
+    <script src="../js/co-common.js?v=v4"></script>
+    <script src="../js/co-projects.js?v=v4"></script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+# ---------- 依赖 ----------
+node_modules/
+npm-cache/
+.pnpm-store/
+package-lock.json.bak
+
+# ---------- 环境变量与密钥（严禁入库）----------
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ---------- 数据库运行时文件 ----------
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.db-journal
+
+# ---------- 用户上传文件（保留目录占位）----------
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# ---------- 日志 ----------
+*.log
+logs/
+
+# ---------- 系统与编辑器 ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# ---------- 本地备份 / 工具产物（不入库）----------
+backend_旧版备份/
+算法网站(3)-加图前备份.zip
+算法网站(3)/照片/
+.workbuddy/

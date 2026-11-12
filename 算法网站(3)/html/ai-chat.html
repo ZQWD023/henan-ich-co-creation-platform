@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 非遗问答 - 河南省非遗共创平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css?v=v4">
+    <style>
+        .ai-chat-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .chat-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e6e0d5;
+            background: linear-gradient(135deg, #b5813f, #a3242c);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .chat-header p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fbf9f5;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #b5813f, #a3242c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: #2f7a5f;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .message.user .message-content {
+            background: #e9f6ee;
+        }
+
+        .message-content p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid #e6e0d5;
+            background: white;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e6e0d5;
+            border-radius: 24px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .chat-input:focus {
+            border-color: #b5813f;
+        }
+
+        .send-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #b5813f, #a3242c);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 12px;
+            max-width: 80px;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #b5813f;
+            margin-right: 4px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        .example-questions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 0 20px 20px;
+        }
+
+        .example-q {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e6e0d5;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example-q:hover {
+            background: #b5813f;
+            color: white;
+            border-color: #b5813f;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="../index.html" class="logo">
+                <img src="../img/suanfaLOGO .png" alt="Logo">
+                河南省非遗共创平台
+            </a>
+        </div>
+    </nav>
+
+    <div class="ai-chat-container">
+        <div class="chat-box">
+            <div class="chat-header">
+                <h2><i class="fas fa-robot"></i> AI 非遗助手</h2>
+                <p>我可以回答关于河南非物质文化遗产的问题</p>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>您好！我是河南省非遗共创平台的 AI 助手。您可以问我关于河南非物质文化遗产的问题，例如：</p>
+                        <ul style="margin: 10px 0 0; padding-left: 20px;">
+                            <li>河南有哪些著名的戏曲？</li>
+                            <li>豫剧和曲剧有什么区别？</li>
+                            <li>什么是钧瓷的窑变？</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="example-questions">
+                <div class="example-q" onclick="askQuestion('河南有哪些著名的戏曲？')">河南有哪些著名的戏曲？</div>
+                <div class="example-q" onclick="askQuestion('什么是钧瓷的窑变？')">什么是钧瓷的窑变？</div>
+                <div class="example-q" onclick="askQuestion('少林功夫有哪些特点？')">少林功夫有哪些特点？</div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="输入您的问题..." onkeypress="handleKeyPress(event)">
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/api.js?v=v4"></script>
+    <script>
+        const messagesContainer = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : ''}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = isUser ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            const p = document.createElement('p');
+            p.textContent = content;
+
+            const time = document.createElement('div');
+            time.className = 'message-time';
+            time.textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+            contentDiv.appendChild(p);
+            contentDiv.appendChild(time);
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message';
+            typingDiv.id = 'typingIndicator';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = '<i class="fas fa-robot"></i>';
+
+            const typing = document.createElement('div');
+            typing.className = 'typing-indicator active';
+            typing.innerHTML = '<span></span><span></span><span></span>';
+
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(typing);
+
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typingDiv = document.getElementById('typingIndicator');
+            if (typingDiv) typingDiv.remove();
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // 添加用户消息
+            addMessage(message, true);
+            chatInput.value = '';
+            sendBtn.disabled = true;
+
+            // 显示输入中...
+            showTyping();
+
+            try {
+                const response = await window.API.ai.chat(message);
+
+                hideTyping();
+                addMessage(response.answer, false);
+            } catch (error) {
+                hideTyping();
+                addMessage(error.message || '暂时无法获取回答，请稍后重试。', false);
+                console.error('AI 请求错误:', error);
+            } finally {
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function askQuestion(question) {
+            chatInput.value = question;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 页面加载时聚焦输入框
+        chatInput.focus();
+    </script>
+</body>
+</html>
