@@ -15,6 +15,7 @@ const OUT = path.join(__dirname, '..', 'docs', 'shots');
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** 镜头清单：与 docs/ppt/答辩口播稿.md 的 P4 段一致 */
+const SHOT_USER = process.env.SHOT_USER || 'creator';
 const SHOTS = [
   { id: '01-home', url: '/index.html', wait: 2200, title: '首页', say: '开场：非遗不缺内容，缺的是把内容变成协作的人。' },
   { id: '02-stats', url: '/index.html', wait: 2000, title: '首页数据条', say: '49 个项目、41 个国家级、18 位传承人、10 大分类 —— 数字都能点进去。', scroll: 900 },
@@ -109,7 +110,7 @@ class CDP {
   await cdp.send('Page.navigate', { url: BASE + '/html/login.html' });
   await wait(1500);
   await cdp.eval(`(() => {
-    const el = document.getElementById('login-username'); if (el) el.value = 'creator';
+    const el = document.getElementById('login-username'); if (el) el.value = SHOT_USER;
     const pw = document.getElementById('login-password'); if (pw) pw.value = '123456';
     const f = document.getElementById('loginForm'); if (f) f.dispatchEvent(new Event('submit',{cancelable:true}));
     return true;

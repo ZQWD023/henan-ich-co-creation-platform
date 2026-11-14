@@ -96,6 +96,14 @@ const authService = {
     // 新用户送一个"初识非遗"成就
     achievementRepo.unlock(user.id, 'first-visit');
 
+    // 新账号自动铺一套可演示的共创数据（1 个自有项目 + 2 个参与项目 + 待审申请），
+    // 这样任何人注册后进「我的工作台」不会是空白；失败不影响注册本身。
+    try {
+      require('./onboarding.service').seedUserWorkspace(user.id);
+    } catch (e) {
+      /* 演示数据失败不阻塞注册 */
+    }
+
     return { token: signToken(user), user: publicUser(user) };
   },
 
