@@ -162,7 +162,7 @@ async function run() {
   const md = [];
   md.push('# RAG / Agent 效果评测报告');
   md.push('');
-  md.push(`> 生成时间：${now}　·　脚本：\`backend/scripts/eval-rag.js\`　·　可重复运行（同一数据同一结果）`);
+  md.push(`> 生成时间：${now} · 脚本：\`backend/scripts/eval-rag.js\` · 可重复运行（同一数据同一结果）`);
   md.push('');
   md.push('## 一、结论（先看数字）');
   md.push('');
