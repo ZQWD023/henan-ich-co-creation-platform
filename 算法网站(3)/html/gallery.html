@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字展馆 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-images"></i> 数字展馆</h1>
+            <p>足不出户云游中原非遗，在虚拟展厅中沉浸式感受千年技艺的视觉之美。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">数字展馆</span>
+        </div>
+
+        <div class="filter-options" id="hall-filters">
+            <button class="filter-btn active" data-hall="all">全部展馆</button>
+        </div>
+
+        <div class="gallery-grid" id="gallery-grid" style="margin-bottom:3rem;"></div>
+    </div>
+
+    <!-- 展品详情弹窗 -->
+    <div class="modal" id="lightbox">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="lb-title">展品详情</h3>
+                <button class="modal-close" id="lb-close">&times;</button>
+            </div>
+            <div class="modal-body" id="lb-body"></div>
+        </div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <script src="../js/data.js?v=v16"></script>
+    <script src="../js/script.js?v=v16"></script>
+    <script src="../js/gallery.js?v=v16"></script>
+</body>
+</html>
