@@ -145,6 +145,8 @@ npm run a11y:md      # 可访问性审计（20 页）→ docs/a11y-report.md
 npm run shots        # 录屏素材：12 张 1080p 分镜截图 → docs/shots/
 npm run pdf          # 技术文档 PDF（16 页，自动校验 ≤30 页）
 npm run reviewer     # 创建/重置评审专用账号
+npm run pre-submit   # 提交前检查：7 项必做逐条判定（哪些还没弄）
+npm run fill -- --school 学校 --group "B 组" --members "甲、乙" --teacher 老师 --repo <仓库> --demo <地址>   # 一键替换所有『待填写』
 ```
 
 > 说明：前端是**零构建**的原生 JS（部署时不需要 webpack/vite，评审拉下来就能跑）。

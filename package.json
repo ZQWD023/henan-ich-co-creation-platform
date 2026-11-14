@@ -22,7 +22,9 @@
     "a11y:md": "node tools/a11y-audit.js --md",
     "shots": "node tools/record-shots.js",
     "deploy:check": "node tools/check-deploy.js",
-    "reviewer": "npm --prefix backend run reviewer"
+    "reviewer": "npm --prefix backend run reviewer",
+    "pre-submit": "node tools/pre-submit.js",
+    "fill": "node tools/fill-info.js"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
