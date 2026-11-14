@@ -209,7 +209,7 @@ function initCreateModal() {
         btn.disabled = true;
         btn.textContent = '创建中…';
         try {
-            const p = await window.API.projects.create({
+            const payload = {
                 title,
                 description,
                 recruitNeed,
@@ -217,7 +217,12 @@ function initCreateModal() {
                 memberLimit,
                 deadline: deadlineRaw ? new Date(deadlineRaw + 'T23:59:59').toISOString() : undefined,
                 publish: true,
-            });
+            };
+            // 有后端走真实接口；静态演示（无后端）落到 localStorage，功能不会"点了没反应"
+            const p = await window.OfflineStore.call(
+                () => window.API.projects.create(payload),
+                () => window.OfflineStore.projects.create(payload)
+            );
             showToast('项目已发布，正在进入详情页…');
             setTimeout(() => { location.href = `co-project-detail.html?id=${encodeURIComponent(p.id)}`; }, 700);
         } catch (err) {

@@ -25,11 +25,19 @@ function inline(s) {
   let out = escapeHtml(s);
   out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
   out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img class="inline-img" src="$2" alt="$1">');
   out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
   return out;
 }
 
-function mdToHtml(md) {
+function mdToHtml(md, baseDir) {
+  const toAbs = (src) => {
+    if (/^https?:/.test(src)) return src;
+    const abs = path.resolve(baseDir || '.', src).replace(/\\/g, '/');
+    return 'file:///' + abs;
+  };
+  const imgHtml = (alt, src) =>
+    '<figure><img src="' + toAbs(src) + '" alt="' + alt + '"><figcaption>' + alt + '</figcaption></figure>';
   const lines = md.split(/\r?\n/);
   const html = [];
   let i = 0;
@@ -96,6 +104,14 @@ function mdToHtml(md) {
       continue;
     } else {
       flushTableBuf();
+    }
+
+    const imgOnly = line.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgOnly) {
+      flushPara();
+      html.push(imgHtml(imgOnly[1], imgOnly[2]));
+      i++;
+      continue;
     }
 
     if (!line.trim()) {
@@ -190,6 +206,10 @@ const CSS = `
   tr { page-break-inside: avoid; }
   blockquote { margin: 6pt 0; padding: 5pt 8pt; background: #fbf7ef; border-left: 2.4pt solid #c19a4b; color: #5b4a34; font-size: 9pt; }
   hr { border: none; border-top: .8pt dashed #d8cdb9; margin: 10pt 0; }
+  figure { margin: 8pt 0 10pt; page-break-inside: avoid; text-align: center; }
+  figure img { max-width: 100%; border: .6pt solid #d8cdb9; border-radius: 3pt; }
+  figcaption { font-size: 8pt; color: #6b5b48; margin-top: 3pt; }
+  img.inline-img { max-width: 100%; }
   a { color: #8c1f2a; text-decoration: none; }
   strong { color: #6d1720; }
 `;
@@ -220,7 +240,7 @@ class CDP {
 
 (async () => {
   const md = fs.readFileSync(SRC, 'utf8');
-  const body = mdToHtml(md);
+  const body = mdToHtml(md, path.dirname(SRC));
   const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>技术文档</title>
 <style>${CSS}</style></head><body>${body}</body></html>`;
 
