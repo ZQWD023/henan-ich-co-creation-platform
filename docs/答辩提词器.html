@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>答辩提词器 · 非遗共创平台</title>
+<style>
+  :root { --red:#8c1f2a; --gold:#c19a4b; --paper:#f7f3ec; --ink:#241a12; --muted:#6b5b48; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Microsoft YaHei","PingFang SC",sans-serif; background:#1c1210; color:#f2e8d8; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 20px; background:#2a0e11; border-bottom:2px solid var(--gold); }
+  h1 { font-size:16px; margin:0; color:var(--gold); font-weight:600; letter-spacing:.5px; }
+  .hud { display:flex; align-items:center; gap:18px; font-variant-numeric:tabular-nums; }
+  .clock { font-size:34px; font-weight:700; letter-spacing:1px; }
+  .clock.warn { color:#ffcf6b; }
+  .clock.over { color:#ff7b7b; }
+  .meta { font-size:12px; color:#b9a68c; line-height:1.5; }
+  button { font-family:inherit; font-size:13px; padding:6px 12px; border-radius:6px; border:1px solid var(--gold); background:transparent; color:var(--gold); cursor:pointer; }
+  button:hover { background:rgba(193,154,75,.15); }
+  main { display:grid; grid-template-columns:300px 1fr; gap:0; height:calc(100vh - 62px); }
+  nav { overflow:auto; border-right:1px solid #3a2a24; background:#211512; }
+  nav a { display:block; padding:9px 14px; color:#cbb99d; text-decoration:none; font-size:13px; border-bottom:1px solid #2c1d18; }
+  nav a:hover { background:#2c1d18; }
+  nav a.active { background:var(--red); color:#fff; }
+  nav .t { float:right; opacity:.65; font-variant-numeric:tabular-nums; }
+  section { overflow:auto; padding:26px 34px; }
+  .slide { display:none; }
+  .slide.show { display:block; }
+  .kicker { color:var(--gold); font-size:12px; letter-spacing:2px; }
+  .title { font-size:26px; font-weight:700; color:#fff; margin:6px 0 16px; }
+  .say { font-size:22px; line-height:1.95; letter-spacing:.4px; }
+  .say b { color:#ffd98a; }
+  .say .cue { color:#8fd0b0; }
+  .hint { margin-top:18px; padding:12px 14px; border-left:3px solid var(--gold); background:rgba(193,154,75,.10); font-size:14px; color:#d8c8ac; line-height:1.8; }
+  .key { color:#ff9d9d; }
+  footer { position:fixed; bottom:0; left:0; right:0; height:6px; background:#2c1d18; }
+  #bar { height:100%; width:0; background:linear-gradient(90deg,var(--red),var(--gold)); transition:width .3s linear; }
+  @media (max-width:900px){ main{grid-template-columns:1fr} nav{display:none} .say{font-size:18px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>答辩提词器 · 河南省非物质文化遗产共创平台</h1>
+  <div class="hud">
+    <div class="meta" id="meta">第 1 / 13 页 · 本页 15s</div>
+    <div class="clock" id="clock">00:00</div>
+    <button id="prev">← 上一页</button>
+    <button id="next">下一页 →</button>
+    <button id="reset">重置</button>
+    <button id="start">开始计时</button>
+  </div>
+</header>
+
+<main>
+  <nav id="nav"></nav>
+  <section id="stage"></section>
+</main>
+<footer><div id="bar"></div></footer>
+
+<script>
+const SLIDES = [
+  { t: '封面', d: 15, say: '各位老师好，我们是 <b>XX 团队</b>，作品是「河南省非物质文化遗产共创平台」。<br>一句话：我们把 <b>非遗知识 → AI 问答 → AI 拆解任务 → 真实共创项目</b> 串成了一条闭环。<br>下面 8 分钟，先讲问题，再现场跑一遍，最后讲技术与数据。', hint: '语速放慢，不要念标题。' },
+  { t: '痛点', d: 45, say: '非遗不缺内容，缺的是 <b>能把内容变成协作的人</b>。<br>传承人不会写方案、找不到设计师；设计师考据一个纹样要三到五天；公众只能"看展览"。<br>所以我们做的不是"给非遗加个聊天框"，而是让 AI 的产出<span class="cue">直接落进业务流程</span>。', hint: '重点说"卡在哪"，不要说"我们很努力"。' },
+  { t: '产品全景', d: 30, say: '五个环节：知识库、RAG 问答、Agent 拆解、共创项目、作品与授权。<br>四个能力，每个都有可核对的数字：检索 Top-1 100%、Agent 5/5、端侧 72 维、8 个安全单测。', hint: '这页只过一遍，不要展开。' },
+  { t: '现场演示', d: 90, say: '（切浏览器）我按真实用户路径走 90 秒。<br>① 首页点"41 个国家级项目"看项目库；<br>② 问 AI"豫剧唱腔特点"——注意<span class="cue">逐字流式</span>、命中片段、<span class="cue">可点依据</span>；<br>③ 进 AI 实验室，输入"把钧瓷做成文创"——五步轨迹实时出现；<br>④ 点"发布为共创项目"——跳到详情页，状态招募中；<br>⑤ 以图搜非遗 + 纹样生成。<br><b>关键句：AI 产出的不是一段文字，是一个项目。</b>', hint: '<span class="key">不要现场发布真项目</span>；到"跳转详情页"就停。若卡住：直接说"演示环境网络波动，我口述下一步"。' },
+  { t: 'RAG', d: 60, say: '三个数字：Top-1 100%、越界拒答 100%、平均 0.4 毫秒。<br>四件事：按语义单元切片（引用能精确到"豫剧·技艺看点"）、BM25 打底、四层加权（上下文 1.35 / 分类 1.8 / 项目名 1.5 / 热门 1.18）、<b>实体闸门</b>——问题里没有非遗实体时宁可不返回依据。', hint: '强调"实体闸门"，这是可解释性最硬的一点。' },
+  { t: 'Agent', d: 60, say: '五个工具用 JSON Schema 声明，每步真实查库。<br>两种规划器：不配 Key 走规则（确定、可复现），配了 Key <span class="cue">让模型自己决定调哪个工具</span>。<br>模型偷懒漏调用、调不存在的工具、网络失败——都会自动补齐或回落，四个单测覆盖。', hint: '这是本届最"值钱"的一页，说清楚"自主决策"四个字。' },
+  { t: '多模态', d: 45, say: '多模态全在端侧：以图搜非遗是 48 维颜色 + 16 维边缘 + 8 维亮度，<b>图片不出本机</b>；纹样生成用 Canvas 画，配色取自项目本身，同种子同图。<br>为什么不上传大模型？隐私、成本，还有最实际的——县域和会场的网络都不一定靠谱。', hint: '主动说"为什么不做"，比被问出来强。' },
+  { t: '安全', d: 30, say: '讲一个具体设计：<b>引用不交给模型生成</b>。<br>很多项目让模型自己写引用编号，模型会编；我们的引用由后端从真实命中片段生成，模型只负责基于资料写话。', hint: '一句话讲完，别展开列表。' },
+  { t: '工程', d: 30, say: '不用形容词：30 个单测全绿、ESLint 零告警、类型检查零错误、图片压掉 49.8%、20 个页面零报错。<br>而且我写了 <span class="cue">npm run verify</span>，八项检查一次跑完，老师回去可以自己复现。', hint: '说到 verify 时停半秒，让评委记住这条命令。' },
+  { t: '数据', d: 30, say: '边界我也说清：105 道题，其中 12 道题面里不含项目名；但标注是我们自己做的，<br>它能证明"检索和编排在真实数据上是通的"，不能证明统计显著性。', hint: '<span class="key">主动认边界</span>，这一句能建立信任。' },
+  { t: '价值与商业', d: 30, say: '三步走：撮合服务费 → 授权分成 → 机构 SaaS。一个地市一年 20 个项目，营收约 5 万、毛利约 70%——很小，但跑得通、能复制。', hint: '不要吹市场空间，讲单位经济。' },
+  { t: '预期问答', d: 30, say: '我们准备了三个问题的答案，随时可以展开：<br>① 和直接调大模型的区别；② 为什么不用向量检索和现代框架；③ 模型挂了怎么办。', hint: '把选择权交给评委，显得从容。' },
+  { t: '收尾', d: 10, say: '<b>让手艺被看见，让创意有落点。</b>谢谢各位老师。', hint: '说完停住，不要补话。' }
+];
+
+const nav = document.getElementById('nav');
+const stage = document.getElementById('stage');
+const clock = document.getElementById('clock');
+const meta = document.getElementById('meta');
+const bar = document.getElementById('bar');
+
+let idx = 0, elapsed = 0, timer = null, running = false;
+
+function total() { return SLIDES.reduce((n, s) => n + s.d, 0); }
+function offset(i) { return SLIDES.slice(0, i).reduce((n, s) => n + s.d, 0); }
+
+function render() {
+  nav.innerHTML = SLIDES.map((s, i) =>
+    `<a href="#" data-i="${i}" class="${i === idx ? 'active' : ''}">${i + 1}. ${s.t}<span class="t">${s.d}s</span></a>`
+  ).join('');
+  const s = SLIDES[idx];
+  stage.innerHTML = `<div class="slide show">
+      <div class="kicker">PAGE ${String(idx + 1).padStart(2, '0')} / ${SLIDES.length}</div>
+      <div class="title">${s.t}</div>
+      <div class="say">${s.say}</div>
+      <div class="hint">${s.hint || ''}</div>
+    </div>`;
+  meta.textContent = `第 ${idx + 1} / ${SLIDES.length} 页 · 本页 ${s.d}s · 全程 ${total()}s`;
+  tick();
+}
+
+function tick() {
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  clock.textContent = `${mm}:${ss}`;
+  const pageEnd = offset(idx) + SLIDES[idx].d;
+  const over = elapsed > pageEnd;
+  clock.className = 'clock' + (over ? ' over' : elapsed > pageEnd - 5 ? ' warn' : '');
+  bar.style.width = Math.min(100, (elapsed / total()) * 100) + '%';
+  if (over) meta.textContent = `第 ${idx + 1} 页超时 ${elapsed - pageEnd}s —— 加快或跳到下一页`;
+  else meta.textContent = `第 ${idx + 1} / ${SLIDES.length} 页 · 本页还剩 ${pageEnd - elapsed}s · 全程 ${total()}s`;
+}
+
+function startTimer() {
+  if (timer) return;
+  running = true;
+  document.getElementById('start').textContent = '暂停';
+  timer = setInterval(() => { elapsed++; tick(); }, 1000);
+}
+
+function pauseTimer() {
+  clearInterval(timer); timer = null; running = false;
+  document.getElementById('start').textContent = '开始计时';
+}
+
+document.getElementById('start').onclick = () => (running ? pauseTimer() : startTimer());
+document.getElementById('next').onclick = () => { if (idx < SLIDES.length - 1) { idx++; render(); } };
+document.getElementById('prev').onclick = () => { if (idx > 0) { idx--; render(); } };
+document.getElementById('reset').onclick = () => { pauseTimer(); elapsed = 0; idx = 0; render(); };
+nav.onclick = (e) => { const a = e.target.closest('a'); if (!a) return; e.preventDefault(); idx = Number(a.dataset.i); render(); };
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); document.getElementById('next').click(); }
+  if (e.key === 'ArrowLeft') document.getElementById('prev').click();
+  if (e.key === 'r') document.getElementById('reset').click();
+  if (e.key === 't') document.getElementById('start').click();
+});
+
+render();
+</script>
+</body>
+</html>
