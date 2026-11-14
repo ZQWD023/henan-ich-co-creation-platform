@@ -228,10 +228,46 @@
     };
   }
 
+  /* ---------------- 静态演示下的"可写"支持（localStorage） ----------------
+   * 目的：GitHub Pages 这类纯静态托管没有后端，但评审点「发起共创」「申请加入」不能没反应。
+   * 做法：写入落到 localStorage，读的时候和内置示例数据合并。
+   * 诚实标注：数据只在这台设备的这个浏览器里，不同步、清缓存即消失。
+   */
+  const K_CREATED = 'henanICHOfflineCreated';
+  const K_APPLIED = 'henanICHOfflineApplied';
+
+  function readJson(key, def) {
+    try {
+      const v = JSON.parse(localStorage.getItem(key) || 'null');
+      return v == null ? def : v;
+    } catch (e) {
+      return def;
+    }
+  }
+  function writeJson(key, val) {
+    try {
+      localStorage.setItem(key, JSON.stringify(val));
+    } catch (e) {
+      /* 隐私模式可能写不了，忽略 */
+    }
+  }
+  const createdProjects = () => readJson(K_CREATED, []);
+  const appliedIds = () => readJson(K_APPLIED, []);
+  function currentUser() {
+    try {
+      const u = window.getUserData ? window.getUserData() : null;
+      if (u) return u;
+      return JSON.parse(localStorage.getItem('henanICHCurrentUser') || 'null');
+    } catch (e) {
+      return null;
+    }
+  }
+
   const projects = {
     list(opts = {}) {
       const { status, keyword, page = 1, pageSize = 9 } = opts;
-      let all = DEMO_PROJECTS.map(mapProject);
+      // 用户自己发布的项目排在最前面（静态演示版）
+      let all = createdProjects().concat(DEMO_PROJECTS.map(mapProject));
       if (status) all = all.filter((p) => p.status === status);
       if (keyword) {
         const k = String(keyword).toLowerCase();
@@ -241,6 +277,30 @@
       return { list: all.slice(start, start + pageSize), total: all.length, page, pageSize };
     },
     detail(id) {
+      const applied = appliedIds().indexOf(id) > -1;
+      const mine = createdProjects().find((p) => p.id === id);
+      if (mine) {
+        const me = currentUser() || {};
+        return {
+          ...mine,
+          members: [
+            {
+              userId: mine.owner ? mine.owner.id : 'offline_me',
+              displayName: (mine.owner && mine.owner.displayName) || me.displayName || '我',
+              role: '发起人',
+              status: 'approved',
+            },
+          ],
+          tasks: [],
+          versions: [],
+          discussions: [],
+          myMemberStatus: null,
+          isOwner: true,
+          canEdit: true,
+          __offline: true,
+          __localCreate: true,
+        };
+      }
       const raw = DEMO_PROJECTS.find((p) => p.id === id);
       if (!raw) return null;
       const base = mapProject(raw);
@@ -250,20 +310,74 @@
         tasks: [],
         versions: [],
         discussions: [],
-        myMemberStatus: null,
+        myMemberStatus: applied ? 'pending' : null,
         isOwner: false,
         canEdit: false,
         __offline: true,
       };
     },
+
+    /** 发起共创（静态演示版：写入 localStorage，形状与后端返回保持一致） */
+    create(payload) {
+      const me = currentUser() || {};
+      const now = new Date();
+      const raw = {
+        id: 'local_' + now.getTime().toString(36) + Math.random().toString(36).slice(2, 5),
+        ownerName: me.displayName || me.username || '演示用户',
+        title: payload.title,
+        description: payload.description,
+        recruitNeed: payload.recruitNeed || '',
+        heritageId: payload.heritageId || null,
+        heritageName: heritageName(payload.heritageId) || '',
+        memberLimit: Number(payload.memberLimit) || 6,
+        membersCount: 1,
+        status: 'recruiting',
+        progress: 0,
+        taskStats: { total: 0, done: 0 },
+        createdAt: now.toISOString().slice(0, 19).replace('T', ' '),
+      };
+      // 关键：走同一个 mapProject，字段与内置演示数据完全一致
+      const mapped = mapProject(raw);
+      const stored = Object.assign({}, mapped, {
+        ownerId: me.id || 'offline_me',
+        ownerUsername: me.username || 'demo',
+        deadlineAt: payload.deadline || null,
+        __local: true,
+      });
+      const list = createdProjects();
+      list.unshift(stored);
+      writeJson(K_CREATED, list);
+      markOffline();
+      return stored;
+    },
+
+    /** 申请加入（静态演示版：记下 pending 状态） */
+    apply(id, role, reason) {
+      const list = appliedIds();
+      if (list.indexOf(id) === -1) list.unshift(id);
+      writeJson(K_APPLIED, list);
+      writeJson('henanICHOfflineApplyInfo', Object.assign(readJson('henanICHOfflineApplyInfo', {}), { [id]: { role, reason, at: Date.now() } }));
+      markOffline();
+      return { ok: true, status: 'pending', __offline: true };
+    },
+
     myWorkspace(user) {
       const u = user || {};
+      const mine = createdProjects().map((p) => ({
+        id: p.id,
+        title: p.title,
+        status: p.status,
+        heritageName: p.heritageName,
+        membersCount: p.membersCount,
+        memberLimit: p.memberLimit,
+        createdAt: p.createdAt,
+      }));
       return {
-        owned: [],
+        owned: mine,
         joined: [],
         pendingApplications: [],
         todoTasks: [],
-        summary: { ownedCount: 0, joinedCount: 0, pendingApplyCount: 0, todoTaskCount: 0 },
+        summary: { ownedCount: mine.length, joinedCount: 0, pendingApplyCount: 0, todoTaskCount: 0 },
         __offline: true,
         __user: u.displayName || u.username || '',
       };

@@ -450,7 +450,10 @@ function initModals() {
         const btn = document.getElementById('a-submit');
         btn.disabled = true;
         try {
-            await window.API.projects.apply(P.id, document.getElementById('a-role').value, document.getElementById('a-reason').value.trim());
+            await window.OfflineStore.call(
+                () => window.API.projects.apply(P.id, document.getElementById('a-role').value, document.getElementById('a-reason').value.trim()),
+                () => window.OfflineStore.projects.apply(P.id, document.getElementById('a-role').value, document.getElementById('a-reason').value.trim())
+            );
             close(applyModal);
             showToast('申请已提交，等待发起人审核');
             await load();

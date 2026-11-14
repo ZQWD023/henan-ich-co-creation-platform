@@ -36,7 +36,7 @@ function escapeHtml(s) {
 /** 优先展示后端给的 message；网络错误则给可操作的说明 */
 function describeError(error) {
   if (!error) return '操作失败，请重试';
-  if (error.network || !error.status) {
+  if (error.network || !error.status || error.status === 404 || error.status === 405 || error.status === 502) {
     return '连不上后端服务（注册和登录都需要后端）。双击项目根目录的「启动网站.bat」启动服务后重试。';
   }
   if (error.status === 429) return '尝试次数过多，请等 15 分钟后再试。';
@@ -90,8 +90,8 @@ function initLoginForm() {
         'success'
       );
     } catch (error) {
-      // 后端没启动时用演示账号进离线模式（页面其余功能仍可浏览）
-      const offline = window.OfflineStore && (error.network || !error.status);
+      // 后端没启动、或部署在纯静态托管（Pages 下 /api/* 返回 404/405）时，用演示账号进离线模式
+      const offline = window.OfflineStore && (error.network || !error.status || [404, 405, 502].includes(error.status));
       if (offline) {
         try {
           const data = window.OfflineStore.auth.login(raw, password);
@@ -225,7 +225,7 @@ function initRegisterForm() {
       } else if (fields.includes('username')) {
         html += `<div style="margin-top:6px;font-size:.82rem;line-height:1.7;">
                     · 换一个用户名即可（邮箱不受影响）${details.suggestion ? `，建议试试 <b>${escapeHtml(details.suggestion)}</b>` : ''}</div>`;
-      } else if (error.network || !error.status) {
+      } else if (error.network || !error.status || [404, 405, 502].includes(error.status)) {
         html +=
           '<div style="margin-top:6px;font-size:.82rem;">双击项目根目录的 <b>启动网站.bat</b> 启动后端后再试。</div>';
       }
