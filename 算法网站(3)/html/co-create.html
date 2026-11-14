@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>共创广场 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="page-hero">
+        <div class="container">
+            <h1><i class="fas fa-lightbulb"></i> 共创广场</h1>
+            <p>让非遗走进当代生活。设计师、文创爱好者与传承人在这里共创，以创意激活千年技艺。</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="../index.html"><i class="fas fa-home"></i> 首页</a>
+            <i class="fas fa-chevron-right"></i>
+            <span class="current">共创广场</span>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:1rem;">
+            <div class="filter-options" id="work-filters" style="margin-bottom:0;">
+                <button class="filter-btn active" data-cat="all">全部作品</button>
+            </div>
+            <button class="btn" id="submit-work-btn"><i class="fas fa-plus"></i> 我要投稿</button>
+        </div>
+
+        <div class="project-grid" id="work-list" style="margin-bottom:3rem;"></div>
+    </div>
+
+    <!-- 投稿模态框 -->
+    <div class="modal" id="submit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-lightbulb"></i> 提交共创作品</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="submit-form">
+                    <div class="form-group">
+                        <label for="work-title">作品名称</label>
+                        <input type="text" id="work-title" class="form-control" placeholder="给你的作品起个名字" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="work-category">作品类型</label>
+                        <select id="work-category" class="form-control" required>
+                            <option value="">请选择类型</option>
+                            <option value="产品设计">产品设计</option>
+                            <option value="视觉设计">视觉设计</option>
+                            <option value="文创产品">文创产品</option>
+                            <option value="数字艺术">数字艺术</option>
+                            <option value="时尚设计">时尚设计</option>
+                            <option value="潮玩设计">潮玩设计</option>
+                            <option value="IP设计">IP设计</option>
+                            <option value="家居设计">家居设计</option>
+                            <option value="旅游文创">旅游文创</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="work-project">关联非遗项目</label>
+                        <select id="work-project" class="form-control" required>
+                            <option value="">请选择关联的非遗项目</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="work-desc">创意说明</label>
+                        <textarea id="work-desc" class="form-control" rows="3" placeholder="介绍一下你的创意与非遗的关联……" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="work-tags">标签（用逗号分隔）</label>
+                        <input type="text" id="work-tags" class="form-control" placeholder="例如：国潮, 茶器, 文创">
+                    </div>
+                    <div class="form-actions" style="display:flex;gap:10px;">
+                        <button type="submit" class="btn">提交作品</button>
+                        <button type="button" class="btn btn-outline" id="modal-cancel">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <script src="../js/data.js?v=v16"></script>
+    <script src="../js/script.js?v=v16"></script>
+    <script src="../js/api.js?v=v16"></script>
+    <script src="../js/offline-store.js?v=v16"></script>
+    <script src="../js/co-common.js?v=v16"></script>
+    <script src="../js/co-create.js?v=v16"></script>
+</body>
+</html>
