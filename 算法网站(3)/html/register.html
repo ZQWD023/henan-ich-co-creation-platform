@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 河南省非物质文化遗产共创平台</title>
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2><i class="fas fa-user-plus"></i> 用户注册</h2>
+            <div id="register-message" class="message" style="display:none;"></div>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="register-username"><i class="fas fa-user"></i> 用户名</label>
+                    <input type="text" id="register-username" class="form-control" placeholder="请输入用户名（至少3个字符）" autocomplete="username" required>
+                    <small class="form-text">用于登录和显示；可以随时换一个</small>
+                    <div id="usernameTip" style="font-size:12px;color:var(--danger);"></div>
+                </div>
+                <div class="form-group">
+                    <label for="register-email"><i class="fas fa-envelope"></i> 邮箱</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="请输入邮箱地址" autocomplete="email" required>
+                    <small class="form-text">⚠️ 一个邮箱只能注册一个账号；也可以用它直接登录</small>
+                    <div id="emailTip" style="font-size:12px;color:var(--danger);"></div>
+                </div>
+                <div class="form-group">
+                    <label for="register-password"><i class="fas fa-lock"></i> 密码</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="请输入密码（至少6个字符）" required>
+                    <small class="form-text">密码长度至少6位，建议包含字母和数字</small>
+                    <div id="passwordTip" style="font-size:12px;color:var(--danger);"></div>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password"><i class="fas fa-lock"></i> 确认密码</label>
+                    <input type="password" id="register-confirm-password" class="form-control" placeholder="请再次输入密码" required>
+                    <small class="form-text">请确保两次输入的密码一致</small>
+                    <div id="confirmPwdTip" style="font-size:12px;color:var(--danger);"></div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block">注 册</button>
+                </div>
+            </form>
+            <div class="form-footer">
+                <p>已有账号？ <a href="login.html">立即登录</a></p>
+                <p><a href="../index.html">返回首页</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="site-footer"></div>
+
+    <script src="../js/data.js?v=v16"></script>
+    <script src="../js/script.js?v=v16"></script>
+    <script src="../js/api.js?v=v16"></script>
+    <script src="../js/auth.js?v=v16"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            renderSiteHeader('');
+            renderSiteFooter();
+        });
+    </script>
+</body>
+</html>
