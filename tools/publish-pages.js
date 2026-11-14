@@ -59,7 +59,12 @@ try {
   /* 不存在就算了 */
 }
 if (fs.existsSync(WORK)) fs.rmSync(WORK, { recursive: true, force: true });
-sh('git worktree add -B gh-pages "' + WORK + '"');
+try {
+  sh('git fetch origin gh-pages --depth=1');
+  sh('git worktree add -B gh-pages "' + WORK + '" origin/gh-pages');
+} catch (e) {
+  sh('git worktree add -B gh-pages "' + WORK + '"');
+}
 
 console.log('② 清空并复制站点文件 ...');
 rmExceptGit(WORK);
@@ -86,7 +91,7 @@ if (!status) {
 
 console.log('④ 推送到 origin gh-pages ...');
 try {
-  const out = execSync('git -c http.version=HTTP/1.1 push origin gh-pages', { cwd: WORK, encoding: 'utf8' });
+  const out = execSync('git -c http.version=HTTP/1.1 push --force origin gh-pages', { cwd: WORK, encoding: 'utf8' });
   console.log(out.trim() || '   已推送');
 } catch (e) {
   console.log('   推送失败（可稍后重试）：', ((e.stderr || '') + (e.stdout || '')).slice(0, 300));
