@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 共创实验室 - 河南省非遗共创平台</title>
+    <meta name="description" content="AI 共创实验室：多步工具调用的共创 Agent、BM25 检索增强的流式问答、以及完全在浏览器端完成的以图搜非遗。">
+    <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
+    <link rel="stylesheet" href="../css/style.css?v=v16">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============ AI 实验室页 ============ */
+        .lab-hero {
+            background: linear-gradient(135deg, #2a1c14 0%, #4a2f1d 55%, #3a2420 100%);
+            color: #f5ecd8;
+            padding: 2.4rem 0 2.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .lab-hero::after {
+            content: '';
+            position: absolute;
+            right: -80px;
+            top: -100px;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(193,154,75,.28), transparent 70%);
+        }
+        .lab-hero h1 { font-size: 2.1rem; display: flex; align-items: center; gap: 12px; margin-bottom: .5rem; }
+        .lab-hero h1 i { color: var(--gold-light); }
+        .lab-hero p { opacity: .88; max-width: 760px; font-size: .95rem; }
+        .lab-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 1rem; position: relative; z-index: 1; }
+        .lab-chip {
+            font-size: .76rem;
+            padding: 3px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(224,200,135,.45);
+            color: #f0e2c2;
+            background: rgba(224,200,135,.10);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lab-tabs { display: flex; gap: .4rem; border-bottom: 2px solid var(--border); margin: 1.6rem 0 1.4rem; overflow-x: auto; }
+        .lab-tab {
+            padding: .7rem 1.15rem;
+            font-size: .94rem;
+            font-weight: 600;
+            color: var(--ink-3);
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            white-space: nowrap;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+        .lab-tab:hover { color: var(--primary); }
+        .lab-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+        @media (max-width: 640px) {
+            .lab-tabs { flex-wrap: wrap; overflow-x: visible; border-bottom: none; }
+            .lab-tab { border: 1px solid var(--border); border-radius: 999px; margin-bottom: 0; padding: .5rem .9rem; font-size: .86rem; }
+            .lab-tab.active { border-color: var(--primary); background: rgba(163,36,44,.06); }
+        }
+        .lab-panel { display: none; }
+        .lab-panel.active { display: block; }
+
+        /* --- Agent 输入区 --- */
+        .lab-card {
+            background: #fffdf8;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.3rem;
+            box-shadow: var(--shadow);
+        }
+        .lab-card h2 { font-size: 1.08rem; display: flex; align-items: center; gap: 8px; margin-bottom: .35rem; }
+        .lab-card h2 i { color: var(--primary); }
+        .lab-hint { font-size: .82rem; color: var(--muted); line-height: 1.7; margin-bottom: .9rem; }
+        .lab-input {
+            width: 100%;
+            min-height: 84px;
+            resize: vertical;
+            padding: .8rem .95rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: inherit;
+            font-size: .95rem;
+            line-height: 1.7;
+            background: #fff;
+            color: var(--ink);
+        }
+        .lab-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(193,154,75,.14); }
+        .lab-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: .85rem; }
+        .lab-examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: .8rem; }
+        .lab-example {
+            font-size: .8rem;
+            padding: 5px 12px;
+            border-radius: 999px;
+            border: 1px dashed var(--border);
+            background: var(--paper);
+            color: var(--ink-3);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .lab-example:hover { border-color: var(--gold); color: var(--primary); background: var(--gold-soft); }
+
+        /* --- 结果布局 --- */
+        .lab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.3rem; margin-top: 1.3rem; align-items: start; }
+        @media (max-width: 900px) { .lab-grid { grid-template-columns: 1fr; } }
+
+        /* --- 步骤时间线 --- */
+        .lab-timeline { display: grid; gap: .7rem; }
+        .lab-step {
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--gold);
+            border-radius: var(--radius-sm);
+            padding: .75rem .9rem;
+            background: #fff;
+            animation: stepIn .35s ease both;
+        }
+        .lab-step.running { border-left-color: var(--primary); background: #fffaf3; }
+        @keyframes stepIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: none; }
+        }
+        .lab-step-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: .82rem; }
+        .lab-step-no {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--primary); color: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: .72rem; font-weight: 700; flex: 0 0 auto;
+        }
+        .lab-tool {
+            font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: .76rem;
+            color: var(--jade-dark);
+            background: rgba(63,124,107,.10);
+            border: 1px solid rgba(63,124,107,.25);
+            padding: 1px 8px;
+            border-radius: 999px;
+        }
+        .lab-ms { margin-left: auto; font-size: .72rem; color: var(--muted); }
+        .lab-step-thought { font-size: .84rem; color: var(--ink-3); margin-top: .35rem; line-height: 1.65; }
+        .lab-step-obs { font-size: .8rem; color: var(--ink-2); margin-top: .3rem; background: var(--paper); border-radius: 6px; padding: .35rem .55rem; line-height: 1.6; }
+        .lab-step-obs b { color: var(--primary); }
+
+        /* --- 方案卡片 --- */
+        .lab-proposal h3 { font-size: 1.15rem; margin-bottom: .5rem; line-height: 1.5; }
+        .lab-proposal .lab-desc { font-size: .9rem; color: var(--ink-3); line-height: 1.8; margin-bottom: .8rem; }
+        .lab-kv { display: grid; gap: .4rem; font-size: .85rem; color: var(--ink-2); margin-bottom: .9rem; }
+        .lab-kv span { color: var(--muted); }
+        .lab-tasks { display: grid; gap: .55rem; margin: .6rem 0 1rem; }
+        .lab-task {
+            display: flex; gap: .7rem; align-items: flex-start;
+            padding: .6rem .75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+        }
+        .lab-task-idx {
+            flex: 0 0 auto; width: 20px; height: 20px; border-radius: 6px;
+            background: var(--gold); color: #fff; font-size: .72rem;
+            display: inline-flex; align-items: center; justify-content: center; font-weight: 700;
+        }
+        .lab-task-title { font-size: .88rem; font-weight: 600; color: var(--ink); }
+        .lab-task-meta { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+        .lab-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: .4rem; }
+
+        /* --- 依据引用 --- */
+        .lab-cites { display: flex; gap: 6px; flex-wrap: wrap; margin-top: .9rem; }
+        .lab-cite {
+            font-size: .74rem;
+            padding: 3px 9px;
+            border-radius: 999px;
+            background: var(--paper-2);
+            border: 1px solid var(--border);
+            color: var(--ink-3);
+        }
+
+        /* --- 以图搜非遗 --- */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2rem 1.2rem;
+            text-align: center;
+            color: var(--muted);
+            background: var(--paper);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .drop-zone:hover, .drop-zone.dragover { border-color: var(--gold); background: var(--gold-soft); color: var(--ink-2); }
+        .drop-zone i { font-size: 2rem; color: var(--gold); display: block; margin-bottom: .5rem; }
+        .drop-zone strong { color: var(--ink-2); }
+        .vision-preview { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-top: 1rem; }
+        .vision-preview img {
+            width: 120px; height: 120px; object-fit: cover;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+        }
+        .vision-results { display: grid; gap: .8rem; margin-top: 1rem; }
+        .vision-item {
+            display: flex; gap: .9rem; align-items: center;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: .6rem;
+            background: #fff;
+            transition: var(--transition);
+        }
+        .vision-item:hover { border-color: var(--gold); box-shadow: var(--shadow); }
+        .vision-item img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; flex: 0 0 auto; }
+        .vision-info { flex: 1; min-width: 0; }
+        .vision-name { font-weight: 600; font-size: .92rem; color: var(--ink); }
+        .vision-meta { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+        .vision-bar { height: 5px; background: var(--paper-3); border-radius: 999px; margin-top: 6px; overflow: hidden; }
+        .vision-bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--primary)); border-radius: 999px; }
+        .vision-pct { font-size: .8rem; font-weight: 700; color: var(--primary); }
+        .vision-note { font-size: .78rem; color: var(--muted); margin-top: .7rem; line-height: 1.7; }
+
+        .lab-empty { text-align: center; color: var(--muted); font-size: .88rem; padding: 2rem 1rem; }
+        .lab-spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: -2px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) {
+            .lab-step { animation: none; }
+            .lab-spinner { animation-duration: 2s; }
+        }
+    </style>
+</head>
+<body>
+    <div id="site-header"></div>
+
+    <section class="lab-hero">
+        <div class="container">
+            <h1><i class="fas fa-flask-vial"></i> AI 共创实验室</h1>
+            <p>四件可以直接上手试的 AI 能力：会查库、会算、会动手的共创 Agent；带检索依据的流式问答；完全跑在浏览器里的以图搜非遗；以及把非遗配色变成可下载纹样的生成器。</p>
+            <div class="lab-chips">
+                <span class="lab-chip"><i class="fas fa-screwdriver-wrench"></i> 5 个工具 · Function Calling / MCP</span>
+                <span class="lab-chip"><i class="fas fa-magnifying-glass-chart"></i> BM25 检索增强（RAG）</span>
+                <span class="lab-chip"><i class="fas fa-microchip"></i> 端侧视觉特征 · 图片不上传</span>
+                <span class="lab-chip"><i class="fas fa-palette"></i> 端侧纹样生成 · 可下载 PNG</span>
+                <span class="lab-chip"><i class="fas fa-shield-halved"></i> 输入拦截 · 输出标识</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="container" style="padding-bottom:3rem;">
+        <div class="lab-tabs" role="tablist">
+            <button class="lab-tab active" data-tab="agent" role="tab" aria-selected="true"><i class="fas fa-robot"></i> AI 共创 Agent</button>
+            <button class="lab-tab" data-tab="vision" role="tab" aria-selected="false"><i class="fas fa-image"></i> 以图搜非遗</button>
+            <button class="lab-tab" data-tab="pattern" role="tab" aria-selected="false"><i class="fas fa-palette"></i> 纹样生成</button>
+            <button class="lab-tab" data-tab="about" role="tab" aria-selected="false"><i class="fas fa-circle-info"></i> 技术说明</button>
+        </div>
+
+        <!-- ============ Agent ============ -->
+        <section class="lab-panel active" id="panel-agent">
+            <div class="lab-card">
+                <h2><i class="fas fa-wand-magic-sparkles"></i> 说一句想法，Agent 帮你把共创方案算出来</h2>
+                <p class="lab-hint">
+                    它会依次调用 <b>检索非遗项目 → 查工艺与传承人 → 查已有作品 → 拆解任务 → 起草方案</b> 五个工具，
+                    每一步的思考、入参、结果都会实时显示在下面。
+                </p>
+                <textarea class="lab-input" id="agent-goal" placeholder="例如：帮我把钧瓷做成一套面向年轻人的文创产品"></textarea>
+                <div class="lab-examples" id="agent-examples">
+                    <span class="lab-example">帮我把钧瓷做成一套文创产品</span>
+                    <span class="lab-example">给汴绣做一条短视频传播计划</span>
+                    <span class="lab-example">想做一个豫剧的线下体验工作坊</span>
+                    <span class="lab-example">少林功夫能做成什么文创</span>
+                </div>
+                <div class="lab-row">
+                    <button class="btn" id="agent-run"><i class="fas fa-play"></i> 开始规划</button>
+                    <button class="btn btn-outline" id="agent-cancel" disabled><i class="fas fa-stop"></i> 停止</button>
+                    <span style="font-size:.8rem;color:var(--muted);" id="agent-status"></span>
+                </div>
+            </div>
+
+            <div class="lab-grid">
+                <div class="lab-card">
+                    <h2><i class="fas fa-diagram-project"></i> 思考与工具调用</h2>
+                    <p class="lab-hint" style="margin-bottom:.7rem;">左侧是 Agent 的执行轨迹，真实记录了每次工具调用的入参与返回。</p>
+                    <div class="lab-timeline" id="agent-trace">
+                        <div class="lab-empty">还没有开始 —— 输入一个想法，点「开始规划」。</div>
+                    </div>
+                </div>
+                <div class="lab-card" id="agent-result-wrap">
+                    <h2><i class="fas fa-file-signature"></i> 共创方案</h2>
+                    <div id="agent-result">
+                        <div class="lab-empty">方案会出现在这里，并可以一键发布成共创项目。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 以图搜非遗 ============ -->
+        <section class="lab-panel" id="panel-vision">
+            <div class="lab-card">
+                <h2><i class="fas fa-image"></i> 上传一张图，找出气质最接近的非遗项目</h2>
+                <p class="lab-hint">
+                    图片<b>不会上传到服务器</b>：浏览器用 Canvas 提取「颜色分布 + 边缘结构 + 明暗直方图」共
+                    <b>72 维特征</b>，再与平台图库逐一比对（归一化欧氏距离 → 相似度）。适合"手上有张参考图，想找可对标的非遗题材"的场景。
+                </p>
+
+                <div class="drop-zone" id="drop-zone">
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    <div><strong>点击选择图片</strong>，或把图片拖到这里</div>
+                    <div style="font-size:.8rem;margin-top:.4rem;">支持 JPG / PNG，建议 1MB 以内</div>
+                    <input type="file" id="vision-file" accept="image/*" hidden>
+                </div>
+
+                <div class="lab-examples" id="vision-samples" style="margin-top:.9rem;">
+                    <span style="font-size:.8rem;color:var(--muted);align-self:center;">没有图片？试试示例：</span>
+                    <span class="lab-example" data-img="../img/gallery/junci.jpg">钧瓷</span>
+                    <span class="lab-example" data-img="../img/gallery/yuju.jpg">豫剧</span>
+                    <span class="lab-example" data-img="../img/gallery/bianxiu.jpg">汴绣</span>
+                </div>
+
+                <div class="vision-preview" id="vision-preview"></div>
+                <div class="vision-results" id="vision-results"></div>
+                <div class="vision-note" id="vision-note"></div>
+            </div>
+        </section>
+
+        <!-- ============ 纹样生成（多模态输出） ============ -->
+        <section class="lab-panel" id="panel-pattern">
+            <div class="lab-grid">
+                <div class="lab-card">
+                    <h2><i class="fas fa-palette"></i> 选一个非遗项目，生成一套纹样</h2>
+                    <p class="lab-hint">
+                        取该项目的<b>配色体系</b>（渐变主色 + 鎏金 + 宣纸 + 墨色），用 Canvas 在浏览器里程序化生成
+                        <b>四方连续 / 团花 / 折枝</b> 三种传统构图，可直接下载 PNG 交给设计同学做底纹或主纹样。
+                        生成过程<b>完全在本地</b>，断网也能用，同一个种子永远得到同一张图（可复现）。
+                    </p>
+
+                    <div class="lab-kv" style="margin-bottom:.8rem;">
+                        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+                            <span style="flex:0 0 auto;">非遗项目</span>
+                            <select id="pattern-heritage" class="lab-input" style="min-height:auto;padding:.45rem .6rem;flex:1;min-width:180px;"></select>
+                        </div>
+                    </div>
+
+                    <div class="lab-examples" id="pattern-styles" style="margin-top:0;"></div>
+
+                    <div class="lab-row">
+                        <button class="btn" id="pattern-generate"><i class="fas fa-wand-magic-sparkles"></i> 生成纹样</button>
+                        <button class="btn btn-outline" id="pattern-reseed"><i class="fas fa-shuffle"></i> 换一批</button>
+                        <button class="btn btn-outline" id="pattern-download" disabled><i class="fas fa-download"></i> 下载 PNG</button>
+                    </div>
+                    <div class="lab-hint" id="pattern-meta" style="margin-top:.7rem;"></div>
+                </div>
+
+                <div class="lab-card">
+                    <h2><i class="fas fa-image"></i> 生成结果</h2>
+                    <div id="pattern-preview" style="margin-top:.2rem;">
+                        <div class="lab-empty">还没有生成 —— 选好项目和构图，点「生成纹样」。</div>
+                    </div>
+                    <div id="pattern-palette" class="lab-cites" style="margin-top:.8rem;"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ 技术说明 ============ -->
+        <section class="lab-panel" id="panel-about">
+            <div class="lab-grid">
+                <div class="lab-card">
+                    <h2><i class="fas fa-screwdriver-wrench"></i> Agent 的工具清单</h2>
+                    <p class="lab-hint">这些工具用 JSON Schema 声明（与 Function Calling / MCP 的 tools 定义同构），由后端真实执行。</p>
+                    <div id="tools-list" class="lab-timeline"><div class="lab-empty">加载中…</div></div>
+                </div>
+                <div class="lab-card">
+                    <h2><i class="fas fa-shield-halved"></i> AI 可控性与安全</h2>
+                    <div class="lab-kv" style="margin-top:.6rem;">
+                        <div><span>输入闸门：</span>提示词注入 / 越界话题 / 隐私信息三类规则拦截</div>
+                        <div><span>检索可溯源：</span>每条回答附带命中的知识片段与相似度</div>
+                        <div><span>输出兜底：</span>大模型不可用时自动降级为平台知识库，页面不白屏</div>
+                        <div><span>AI 标识：</span>回答统一标注"由 AI 生成，仅供参考"</div>
+                        <div><span>限流：</span>登录/注册 15 分钟 30 次，全站 15 分钟 600 次</div>
+                        <div><span>隐私：</span>以图搜非遗的图片全程不出浏览器</div>
+                    </div>
+                    <p class="lab-hint" style="margin-top:.8rem;">
+                        接口：<code>GET /api/ai/tools</code> · <code>POST /api/ai/agent/stream</code> ·
+                        <code>POST /api/ai/chat/stream</code>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="site-footer"></div>
+    <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
+
+    <script src="../js/data.js?v=v16"></script>
+    <script src="../js/script.js?v=v16"></script>
+    <script src="../js/api.js?v=v16"></script>
+    <script src="../js/ai-client.js?v=v16"></script>
+    <script src="../js/vision-search.js?v=v16"></script>
+    <script src="../js/pattern-generator.js?v=v16"></script>
+    <script src="../js/ai-lab.js?v=v16"></script>
+</body>
+</html>
