@@ -229,7 +229,8 @@
   }
 
   const projects = {
-    list({ status, keyword, page = 1, pageSize = 9 } = {}) {
+    list(opts = {}) {
+      const { status, keyword, page = 1, pageSize = 9 } = opts;
       let all = DEMO_PROJECTS.map(mapProject);
       if (status) all = all.filter((p) => p.status === status);
       if (keyword) {
@@ -322,14 +323,14 @@
       const localHit = Array.isArray(localUsers) ? localUsers.find((u) => u.username === username) : null;
 
       if (!acc && !localHit) {
-        const err = new Error(
-          '离线模式：只能用演示账号登录（admin / creator / designer / writer / user，密码 123456）'
+        const err = /** @type {HttpError} */ (
+          new Error('离线模式：只能用演示账号登录（admin / creator / designer / writer / user，密码 123456）')
         );
         err.status = 401;
         throw err;
       }
       if (password !== '123456') {
-        const err = new Error('离线模式：演示账号密码都是 123456');
+        const err = /** @type {HttpError} */ (new Error('离线模式：演示账号密码都是 123456'));
         err.status = 401;
         throw err;
       }

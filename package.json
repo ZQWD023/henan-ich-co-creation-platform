@@ -10,14 +10,18 @@
     "dev": "npm --prefix backend run dev",
     "lint": "eslint \"算法网站(3)/js\" backend launcher.js --ext .js",
     "lint:fix": "npm run lint -- --fix",
-    "format:check": "prettier --check \"算法网站(3)/js/ai-client.js\" \"算法网站(3)/js/ai-lab.js\" \"算法网站(3)/js/ai-chat.js\" \"算法网站(3)/js/vision-search.js\" \"算法网站(3)/js/offline-store.js\"",
-    "format": "prettier --write \"算法网站(3)/js/ai-client.js\" \"算法网站(3)/js/ai-lab.js\" \"算法网站(3)/js/ai-chat.js\" \"算法网站(3)/js/vision-search.js\" \"算法网站(3)/js/offline-store.js\"",
+    "typecheck": "tsc --noEmit",
+    "format:check": "prettier --check \"算法网站(3)/js/ai-client.js\" \"算法网站(3)/js/ai-lab.js\" \"算法网站(3)/js/ai-chat.js\" \"算法网站(3)/js/vision-search.js\" \"算法网站(3)/js/offline-store.js\" \"算法网站(3)/js/pattern-generator.js\" \"算法网站(3)/js/auth.js\"",
+    "format": "prettier --write \"算法网站(3)/js/ai-client.js\" \"算法网站(3)/js/ai-lab.js\" \"算法网站(3)/js/ai-chat.js\" \"算法网站(3)/js/vision-search.js\" \"算法网站(3)/js/offline-store.js\" \"算法网站(3)/js/pattern-generator.js\" \"算法网站(3)/js/auth.js\"",
     "test": "npm --prefix backend test",
-    "check": "npm run lint && npm test"
+    "eval:rag": "npm --prefix backend run eval:rag",
+    "pdf": "node tools/build-pdf.js",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "prettier": "^3.3.3"
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
   },
   "engines": {
     "node": ">=20.0.0"

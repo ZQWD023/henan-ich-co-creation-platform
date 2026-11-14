@@ -306,7 +306,7 @@
   /**
    * 生成纹样
    * @param {{heritageId?:string, style?:string, seed?:number, size?:number}} opts
-   * @returns {{dataUrl:string, canvas:HTMLCanvasElement, palette:object, style:string, seed:number, meta:object}}
+   * @returns {PatternResult}
    */
   function generate(opts) {
     const o = opts || {};
