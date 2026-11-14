@@ -88,7 +88,8 @@
 
 | 项 | 值 |
 |---|---|
-| 演示地址 | `https://zqwd023.github.io/henan-ich-co-creation-platform/` |
+| 演示地址 | `https://zqwd023.github.io/henan-ich-co-creation-platform/`（GitHub Pages 静态演示：浏览与 AI 实验室可用，写操作需本地后端） |
+| 代码仓库 | `https://github.com/ZQWD023/henan-ich-co-creation-platform` |
 | 评审账号 | `reviewer` / `Reviewer@2026`（跑 `npm run reviewer` 生成/重置） |
 | 演示账号 | `creator` / `123456`（可体验发布与协作） |
 
