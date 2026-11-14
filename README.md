@@ -84,6 +84,16 @@
 → 自动完成：检查 Node → 安装依赖 → 生成 `.env` → 首次自动导入非遗数据与演示项目 → 启动服务 → 打开浏览器。
 页面每 4 秒自动探测后端，服务起来后会自动把「离线演示」切回真实数据。
 
+**在线演示（部署后填这里）**
+
+| 项 | 值 |
+|---|---|
+| 演示地址 | `（待填：https://xxx.onrender.com）` |
+| 评审账号 | `reviewer` / `Reviewer@2026`（跑 `npm run reviewer` 生成/重置） |
+| 演示账号 | `creator` / `123456`（可体验发布与协作） |
+
+部署完成后跑一次自检（30 秒，9 项）：`npm run deploy:check -- https://你的域名 --with-login reviewer Reviewer@2026`
+
 **可选：网页上的按钮直接拉起后端**（本机便利，需一次性安装）
 双击 `tools/安装一键启动.cmd` 注册 `ich://` 协议 → 之后在网页「离线演示」提示里点「一键启动后端」即可。
 只写 `HKEY_CURRENT_USER`，可用 `tools/卸载一键启动.cmd` 卸载；换台电脑不生效，所以提交材料仍需在线演示地址 + 视频。详见 `tools/README.md`。
@@ -129,7 +139,12 @@ npm install          # 安装开发依赖（eslint / prettier）
 npm run lint         # ESLint：前端 js + 后端 + launcher（当前 0 错误 0 告警）
 npm run format:check # Prettier 校验新增模块格式
 npm test             # 后端单测（20 个：RAG 检索 / 安全闸门 / Agent 编排）
-npm run check        # lint + test 一把跑完（提交前跑这个）
+npm run check        # lint + format + typecheck + test 一把跑完
+npm run verify       # 8 项提交前自检（页面引用/规范/类型/单测/评测/PDF/接口）
+npm run a11y:md      # 可访问性审计（20 页）→ docs/a11y-report.md
+npm run shots        # 录屏素材：12 张 1080p 分镜截图 → docs/shots/
+npm run pdf          # 技术文档 PDF（16 页，自动校验 ≤30 页）
+npm run reviewer     # 创建/重置评审专用账号
 ```
 
 > 说明：前端是**零构建**的原生 JS（部署时不需要 webpack/vite，评审拉下来就能跑）。

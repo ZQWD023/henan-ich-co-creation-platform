@@ -6,7 +6,7 @@
     <title>AI 共创实验室 - 河南省非遗共创平台</title>
     <meta name="description" content="AI 共创实验室：多步工具调用的共创 Agent、BM25 检索增强的流式问答、以及完全在浏览器端完成的以图搜非遗。">
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
-    <link rel="stylesheet" href="../css/style.css?v=v16">
+    <link rel="stylesheet" href="../css/style.css?v=v17">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ============ AI 实验室页 ============ */
@@ -308,7 +308,7 @@
                     <i class="fas fa-cloud-arrow-up"></i>
                     <div><strong>点击选择图片</strong>，或把图片拖到这里</div>
                     <div style="font-size:.8rem;margin-top:.4rem;">支持 JPG / PNG，建议 1MB 以内</div>
-                    <input type="file" id="vision-file" accept="image/*" hidden>
+                    <input type="file" id="vision-file" accept="image/*" aria-label="选择要识别的一张图片" hidden>
                 </div>
 
                 <div class="lab-examples" id="vision-samples" style="margin-top:.9rem;">
@@ -338,7 +338,7 @@
                     <div class="lab-kv" style="margin-bottom:.8rem;">
                         <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
                             <span style="flex:0 0 auto;">非遗项目</span>
-                            <select id="pattern-heritage" class="lab-input" style="min-height:auto;padding:.45rem .6rem;flex:1;min-width:180px;"></select>
+                            <select id="pattern-heritage" aria-label="选择非遗项目" class="lab-input" style="min-height:auto;padding:.45rem .6rem;flex:1;min-width:180px;"></select>
                         </div>
                     </div>
 
@@ -392,12 +392,12 @@
     <div id="site-footer"></div>
     <div id="message-toast" class="toast"><i class="fas fa-check-circle toast-icon"></i><span class="toast-text"></span></div>
 
-    <script src="../js/data.js?v=v16"></script>
-    <script src="../js/script.js?v=v16"></script>
-    <script src="../js/api.js?v=v16"></script>
-    <script src="../js/ai-client.js?v=v16"></script>
-    <script src="../js/vision-search.js?v=v16"></script>
-    <script src="../js/pattern-generator.js?v=v16"></script>
-    <script src="../js/ai-lab.js?v=v16"></script>
+    <script src="../js/data.js?v=v17"></script>
+    <script src="../js/script.js?v=v17"></script>
+    <script src="../js/api.js?v=v17"></script>
+    <script src="../js/ai-client.js?v=v17"></script>
+    <script src="../js/vision-search.js?v=v17"></script>
+    <script src="../js/pattern-generator.js?v=v17"></script>
+    <script src="../js/ai-lab.js?v=v17"></script>
 </body>
 </html>

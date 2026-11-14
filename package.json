@@ -17,7 +17,12 @@
     "eval:rag": "npm --prefix backend run eval:rag",
     "pdf": "node tools/build-pdf.js",
     "verify": "node tools/verify.js",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm test"
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test",
+    "a11y": "node tools/a11y-audit.js",
+    "a11y:md": "node tools/a11y-audit.js --md",
+    "shots": "node tools/record-shots.js",
+    "deploy:check": "node tools/check-deploy.js",
+    "reviewer": "npm --prefix backend run reviewer"
   },
   "devDependencies": {
     "eslint": "^8.57.0",

@@ -100,7 +100,9 @@ function checkEval() {
     return;
   }
   // 末行汇总格式：Top-1 100.0% | Top-3 100.0% | 拒答 100.0% | 关键词 100.0% | 平均 1.08ms | Agent 5/5
-  const summary = r.out.split('\n').find((l) => /^Top-1\s+[\d.]+%/.test(l.trim())) || '';
+  // 汇总行格式：`105 题 | Top-1 100.0% | Top-3 100.0% | 拒答 100.0% | ... | Agent 5/5`
+  const lines = r.out.split('\n').map((l) => l.trim());
+  const summary = [...lines].reverse().find((l) => /Top-1\s+[\d.]+%/.test(l) && /\|/.test(l)) || '';
   const top1 = /Top-1\s+([\d.]+%)/.exec(summary);
   const top3 = /Top-3\s+([\d.]+%)/.exec(summary);
   const agent = /Agent\s+(\d+\/\d+)/.exec(summary);

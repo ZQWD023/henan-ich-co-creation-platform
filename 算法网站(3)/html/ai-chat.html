@@ -6,7 +6,7 @@
     <title>AI 非遗问答 - 河南省非遗共创平台</title>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../css/style.css?v=v16">
+    <link rel="stylesheet" href="../css/style.css?v=v17">
     <style>
         body { min-height: 100vh; }
 
@@ -394,15 +394,16 @@
     </div>
 
     <div class="ai-chat-container">
-        <div class="chat-box">
-            <div class="chat-header">
+        <main class="chat-box" aria-label="AI 非遗问答">
+            <h1 class="sr-only">AI 非遗问答 - 河南省非物质文化遗产共创平台</h1>
+            <header class="chat-header">
                 <div class="chat-avatar"><i class="fas fa-robot"></i></div>
                 <div class="chat-titles">
                     <h2>AI 非遗助手</h2>
                     <p>我可以回答关于河南非物质文化遗产的问题</p>
                 </div>
                 <span class="ai-status" id="aiStatus"><span class="dot"></span><span id="aiStatusText">正在连接…</span></span>
-            </div>
+            </header>
 
             <div class="chat-messages" id="chatMessages">
                 <div class="message">
@@ -440,13 +441,13 @@
                     </button>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
-    <script src="../js/data.js?v=v16"></script>
-    <script src="../js/api.js?v=v16"></script>
-    <script src="../js/ai-chat-kb.js?v=v16"></script>
-    <script src="../js/ai-client.js?v=v16"></script>
-    <script src="../js/ai-chat.js?v=v16"></script>
+    <script src="../js/data.js?v=v17"></script>
+    <script src="../js/api.js?v=v17"></script>
+    <script src="../js/ai-chat-kb.js?v=v17"></script>
+    <script src="../js/ai-client.js?v=v17"></script>
+    <script src="../js/ai-chat.js?v=v17"></script>
 </body>
 </html>
