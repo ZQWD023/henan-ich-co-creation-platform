@@ -1,0 +1,26 @@
+{
+  "name": "henan-ich-co-creation",
+  "version": "2.1.0",
+  "private": true,
+  "description": "河南省非物质文化遗产共创平台 · 传智杯 AI Web 网页开发挑战赛参赛作品",
+  "main": "launcher.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node launcher.js",
+    "dev": "npm --prefix backend run dev",
+    "lint": "eslint \"算法网站(3)/js\" backend launcher.js --ext .js",
+    "lint:fix": "npm run lint -- --fix",
+    "format:check": "prettier --check \"算法网站(3)/js/ai-client.js\" \"算法网站(3)/js/ai-lab.js\" \"算法网站(3)/js/ai-chat.js\" \"算法网站(3)/js/vision-search.js\" \"算法网站(3)/js/offline-store.js\"",
+    "format": "prettier --write \"算法网站(3)/js/ai-client.js\" \"算法网站(3)/js/ai-lab.js\" \"算法网站(3)/js/ai-chat.js\" \"算法网站(3)/js/vision-search.js\" \"算法网站(3)/js/offline-store.js\"",
+    "test": "npm --prefix backend test",
+    "check": "npm run lint && npm test"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,52 @@
+{
+  "root": true,
+  "env": { "browser": true, "es2022": true },
+  "parserOptions": { "ecmaVersion": 2022, "sourceType": "script" },
+  "extends": ["eslint:recommended"],
+  "rules": {
+    "no-unused-vars": ["warn", { "args": "none", "varsIgnorePattern": "^_", "caughtErrors": "none" }],
+    "no-empty": ["warn", { "allowEmptyCatch": true }],
+    "no-console": "off",
+    "no-var": "warn",
+    "prefer-const": "warn",
+    "eqeqeq": ["warn", "smart"],
+    "no-prototype-builtins": "warn",
+    "no-fallthrough": "error",
+    "no-self-assign": "error",
+    "no-unreachable": "error"
+  },
+  "overrides": [
+    {
+      "files": ["算法网站(3)/js/**/*.js"],
+      "rules": {
+        "no-undef": "off",
+        "no-unused-vars": "off",
+        "no-var": "off",
+        "prefer-const": "off"
+      }
+    },
+    {
+      "files": ["backend/**/*.js"],
+      "env": { "node": true, "browser": false },
+      "rules": {
+        "no-unused-vars": ["warn", { "args": "none", "varsIgnorePattern": "^_" }]
+      }
+    },
+    {
+      "files": ["backend/tests/**/*.js", "*.config.js"],
+      "env": { "node": true }
+    },
+    {
+      "files": ["launcher.js"],
+      "env": { "node": true }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    "backend/node_modules/",
+    "backend_旧版备份/",
+    "**/*.min.js",
+    "算法网站(3)/照片/",
+    "*.zip"
+  ]
+}

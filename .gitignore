@@ -1,0 +1,43 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+dist/
+build/
+.cache/
+
+# ===== 环境变量与密钥（绝不入库）=====
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ===== 数据库与运行时数据 =====
+backend/database.sqlite
+backend/database.sqlite-wal
+backend/database.sqlite-shm
+*.sqlite
+*.sqlite3
+backend/uploads/
+backend/_t.log
+*.log
+
+# ===== 编辑器 / 系统 =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 临时文件 =====
+*.tmp
+*.bak
+~$*
+
+# ===== 旧版本备份 / 打包文件（不参与评审，避免仓库臃肿）=====
+backend_旧版备份/
+算法网站(3)-加图前备份.zip
+*.zip
+算法网站(3)/照片/
+
+# ===== 本地生成（协议安装脚本产物）=====
+tools/ich.reg
