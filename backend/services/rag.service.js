@@ -89,6 +89,7 @@ function buildChunks() {
       region: r.region,
       section,
       text: t,
+      popularity: Number(r.popularity) || 0,
     });
   };
 
@@ -198,7 +199,20 @@ function buildIndex() {
   for (const h of CATEGORY_HINTS) h.keys.forEach((k) => entitySet.add(k));
   entities = [...entitySet].filter((e) => e && e.length >= 2).sort((a, b) => b.length - a.length);
 
-  index = { chunks, df, avgLen: totalLen / Math.max(chunks.length, 1), N: chunks.length, updatedAt: Date.now() };
+  // 热门度范围（用于排序时的小幅先验，见 retrieve）
+  const pops = chunks.map((c) => c.popularity || 0);
+  const maxPop = pops.length ? Math.max(...pops) : 0;
+  const minPop = pops.length ? Math.min(...pops) : 0;
+
+  index = {
+    chunks,
+    df,
+    avgLen: totalLen / Math.max(chunks.length, 1),
+    N: chunks.length,
+    maxPop,
+    minPop,
+    updatedAt: Date.now(),
+  };
   builtAt = Date.now();
   return index;
 }
@@ -246,6 +260,15 @@ function retrieve(query, opts = {}) {
     // 项目名整体命中额外加权
     if (c.heritageName && String(query).includes(c.heritageName)) s *= 1.5;
     scored.push({ ...c, score: s });
+  }
+
+  // 热门度先验：同一分类下，"招牌项目"应当排在前面（例如问"河南有哪些武术"时少林功夫优先）。
+  // 只做小幅加权（最多 +18%），不改变强相关的排序。
+  if (idx.maxPop > idx.minPop) {
+    for (const c of scored) {
+      const norm = (c.popularity - idx.minPop) / (idx.maxPop - idx.minPop);
+      c.score *= 1 + 0.18 * norm;
+    }
   }
 
   scored.sort((a, b) => b.score - a.score);
