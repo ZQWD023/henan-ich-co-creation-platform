@@ -91,8 +91,17 @@
 | 演示地址 | `https://zqwd023.github.io/henan-ich-co-creation-platform/` | **静态演示**（GitHub Pages）：浏览、项目库、AI 实验室（以图搜非遗 / 纹样生成）完全可用；**写操作需后端** |
 | 代码仓库 | `https://github.com/ZQWD023/henan-ich-co-creation-platform` | — |
 | 静态演示怎么登 | 点右上角「登录」，用离线演示账号 `creator` / `123456`（无需后端） | Pages 静态站 |
+| 静态演示能做什么 | 浏览全部页面 · AI 问答（内置知识库）· 以图搜非遗 · 纹样生成 · **发起共创 / 申请加入**（数据存在你自己的浏览器 localStorage，刷新仍在，不跨设备） | Pages 静态站 |
 | 完整版评审账号 | `reviewer` / `Reviewer@2026`（`npm run reviewer` 生成/重置） | **需要后端**（Render / Docker / 本地 `启动网站.bat`）才有此账号 |
 | 完整版演示账号 | `creator` / `123456`（可体验发布与协作） | 需要后端 |
+
+**想一键部署完整版（含后端）：**
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/ZQWD023/henan-ich-co-creation-platform)
+
+点上面的按钮 → 登录 Render（可用 GitHub 账号）→ 填一个 `JWT_SECRET` → 约 3 分钟拿到 `https://xxx.onrender.com`。
+配置读的是仓库里的 `deploy/render.yaml`，无需手工填构建命令。
+部署完把地址加到上表，并跑一次 `npm run deploy:check -- <地址> --with-login reviewer Reviewer@2026`。
 
 > ⚠️ 静态站（Pages）没有后端，所以 `reviewer` 这个账号在 Pages 上登录不进去 —— 那是完整版的账号。
 > 想在 Pages 上体验，请用 `creator / 123456`（自动进入离线演示模式）。
