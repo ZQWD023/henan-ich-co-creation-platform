@@ -356,7 +356,10 @@
       const list = appliedIds();
       if (list.indexOf(id) === -1) list.unshift(id);
       writeJson(K_APPLIED, list);
-      writeJson('henanICHOfflineApplyInfo', Object.assign(readJson('henanICHOfflineApplyInfo', {}), { [id]: { role, reason, at: Date.now() } }));
+      writeJson(
+        'henanICHOfflineApplyInfo',
+        Object.assign(readJson('henanICHOfflineApplyInfo', {}), { [id]: { role, reason, at: Date.now() } })
+      );
       markOffline();
       return { ok: true, status: 'pending', __offline: true };
     },
