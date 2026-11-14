@@ -171,8 +171,8 @@ text(
     [("把「非遗知识 → AI 问答 → AI 拆解任务 → 真实共创项目」串成一条闭环", 17, False, RGBColor(0xE8, 0xD9, 0xB8))],
 )
 text(s, IN(1.15), IN(4.55), IN(6.2), IN(1.2), [
-    ("团队：（待填写）", 13, False, RGBColor(0xC9, 0xB8, 0x9A), 6),
-    ("学校：（待填写）　　指导教师：（待填写）", 13, False, RGBColor(0xC9, 0xB8, 0x9A), 6),
+    ("团队：刘雅馨、刘辰菲", 13, False, RGBColor(0xC9, 0xB8, 0x9A), 6),
+    ("学校：平顶山学院　　组别：B 组　　指导教师：彭伟国", 13, False, RGBColor(0xC9, 0xB8, 0x9A), 6),
     ("在线演示：https://zqwd023.github.io/henan-ich-co-creation-platform/　　仓库：https://github.com/ZQWD023/henan-ich-co-creation-platform", 13, False, RGBColor(0xC9, 0xB8, 0x9A)),
 ])
 text(s, W - IN(4.2), IN(6.55), IN(3.6), IN(0.4), [("49 个项目 · 506 知识片段 · 5 个 AI 工具", 11, False, GOLD)], align=PP_ALIGN.RIGHT)

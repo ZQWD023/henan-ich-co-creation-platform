@@ -51,7 +51,7 @@ const RULES = [
   { file: 'README.md', key: 'teacher', from: /\| 指导老师 \| （待填写） \|/g, to: `| 指导老师 | ${'$'}TEACHER |` },
   { file: 'README.md', key: 'demo', from: /\| 演示地址 \| `（待填：https:\/\/xxx\.onrender\.com）` \|/g, to: `| 演示地址 | \`${'$'}DEMO\` |` },
   // 技术文档封面
-  { file: 'docs/技术文档.md', key: 'team', from: /^> 团队：（待填写）　　学校：（待填写）　　版本：v2\.1　　日期：2026-11$/gm, to: '> 团队：$MEMBERS　　学校：$SCHOOL　　组别：$GROUP　　指导教师：$TEACHER　　版本：v2.1' },
+  { file: 'docs/技术文档.md', key: 'team', from: /^> 团队：.*$/m, to: '> 团队：$MEMBERS　　学校：$SCHOOL　　组别：$GROUP　　指导教师：$TEACHER　　版本：v2.1' },
   { file: 'docs/技术文档.md', key: 'repo', from: /^> 代码仓库：（待填写：GitHub \/ Gitee 公开地址）　　在线演示：（待填写）$/gm, to: '> 代码仓库：$REPO　　在线演示：$DEMO' },
   // 口播稿
   { file: 'docs/ppt/答辩口播稿.md', key: 'members', from: /我们是 XX 团队，作品是/g, to: '我们是$MEMBERS 团队，作品是' },
