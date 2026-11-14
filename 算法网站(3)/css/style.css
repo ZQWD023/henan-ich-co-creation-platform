@@ -1472,3 +1472,17 @@ body.has-bk-banner { padding-bottom: 112px; }
     white-space: nowrap;
     border: 0;
 }
+
+/* 共创项目卡片：任务状态小标签 */
+.co-chip-row { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .45rem; }
+.co-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: .72rem; line-height: 1;
+    padding: 3px 7px; border-radius: 999px;
+    color: var(--muted); background: rgba(138,122,99,.10);
+    border: 1px solid transparent;
+}
+.co-chip i { font-size: .66rem; }
+.co-chip-done { color: var(--success); background: rgba(47,143,95,.12); }
+.co-chip-review { color: var(--warning); background: rgba(208,138,46,.14); }
+.co-chip-doing { color: var(--blue); background: rgba(47,90,143,.12); }

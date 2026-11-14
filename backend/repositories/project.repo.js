@@ -35,7 +35,13 @@ const projectRepo = {
         `SELECT p.*, u.username AS owner_name, u.display_name AS owner_display, u.avatar AS owner_avatar,
                 h.name AS heritage_name,
                 (SELECT COUNT(*) FROM co_task t WHERE t.project_id = p.id) AS task_total,
-                (SELECT COUNT(*) FROM co_task t WHERE t.project_id = p.id AND t.status = 'done') AS task_done
+                (SELECT COUNT(*) FROM co_task t WHERE t.project_id = p.id AND t.status = 'done') AS task_done,
+                (SELECT COUNT(*) FROM co_task t WHERE t.project_id = p.id AND t.status = 'doing') AS task_doing,
+                (SELECT COUNT(*) FROM co_task t WHERE t.project_id = p.id AND t.status = 'review') AS task_review,
+                (SELECT COUNT(*) FROM co_task t WHERE t.project_id = p.id AND t.status = 'todo') AS task_todo,
+                (SELECT COUNT(*) FROM co_version v WHERE v.project_id = p.id) AS versions_count,
+                (SELECT COUNT(*) FROM co_discussion d WHERE d.project_id = p.id) AS discussions_count,
+                (SELECT COUNT(*) FROM work w WHERE w.project_id = p.id AND w.status = 'approved') AS works_count
          FROM co_project p
          LEFT JOIN users u ON u.id = p.owner_id
          LEFT JOIN heritage h ON h.id = p.heritage_id

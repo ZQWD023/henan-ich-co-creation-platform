@@ -100,6 +100,16 @@ function mapProject(row, extra = {}) {
     },
     progress: taskTotal > 0 ? Math.round((taskDone / taskTotal) * 100) : 0,
     taskStats: { total: taskTotal, done: taskDone },
+    // 任务分状态计数 + 版本/讨论/作品数（卡片上展示"项目的进度等一系列形象的东西"）
+    progressDetail: {
+      todo: row.task_todo != null ? row.task_todo : Math.max(0, taskTotal - taskDone),
+      doing: row.task_doing || 0,
+      review: row.task_review || 0,
+      done: taskDone,
+    },
+    versionsCount: row.versions_count || 0,
+    discussionsCount: row.discussions_count || 0,
+    worksCount: row.works_count || 0,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     closedAt: row.closed_at,
