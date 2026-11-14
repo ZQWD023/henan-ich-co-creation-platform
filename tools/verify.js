@@ -22,7 +22,13 @@ function record(name, ok, detail, status) {
 }
 
 function run(cmd, cwd, opts = {}) {
-  const r = spawnSync(cmd, { cwd: cwd || ROOT, shell: true, encoding: 'utf8', timeout: opts.timeout || 300000 });
+  const r = spawnSync(cmd, {
+    cwd: cwd || ROOT,
+    shell: true,
+    encoding: 'utf8',
+    timeout: opts.timeout || 300000,
+    env: Object.assign({}, process.env, opts.env || {}),
+  });
   const out = ((r.stdout || '') + (r.stderr || '')).trim();
   return { code: r.status == null ? -1 : r.status, out };
 }
@@ -87,7 +93,8 @@ function checkTests() {
 
 /* ---------------- 6. RAG / Agent 评测 ---------------- */
 function checkEval() {
-  const r = run('node scripts/eval-rag.js', BACKEND);
+  // EVAL_NO_WRITE=1：只评测不写报告，避免自检把工作区弄脏
+  const r = run('node scripts/eval-rag.js', BACKEND, { env: { EVAL_NO_WRITE: '1' } });
   if (r.code !== 0) {
     record('⑥ RAG / Agent 评测', false, r.out.split('\n').slice(-3).join(' '));
     return;

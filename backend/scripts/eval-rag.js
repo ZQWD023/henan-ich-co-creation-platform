@@ -217,12 +217,15 @@ async function run() {
   md.push('- 关键词覆盖率是字符串匹配，无法判断语义是否真的正确（需要人工复核）。');
   md.push('');
 
+  // 自检脚本（tools/verify.js）会带 EVAL_NO_WRITE=1：只跑不落盘，保持工作区干净
   const outFile = path.join(__dirname, '..', 'docs', 'rag-eval-report.md');
-  fs.writeFileSync(outFile, md.join('\n'), 'utf8');
+  if (!process.env.EVAL_NO_WRITE) {
+    fs.writeFileSync(outFile, md.join('\n'), 'utf8');
+  }
 
   console.log(md.slice(0, 22).join('\n'));
   console.log('\n...');
-  console.log(`报告已写入：${outFile}`);
+  console.log(process.env.EVAL_NO_WRITE ? '（自检模式：未写报告文件）' : `报告已写入：${outFile}`);
   console.log(
     `\nTop-1 ${pct(top1, total)} | Top-3 ${pct(top3, total)} | 拒答 ${pct(abstainOk, abstainTotal)} | 关键词 ${pct(kwHit, kwTotal)} | 平均 ${avgMs.toFixed(2)}ms | Agent ${agentOk}/${agentRows.length}`
   );
