@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>非遗共创平台 · 传智杯「AI Web」国奖对标诊断报告</title>
+<style>
+  :root{
+    --ink:#1c1a17; --ink2:#4a443c; --ink3:#7a7268; --line:#e6e0d5;
+    --paper:#fbf9f5; --card:#ffffff;
+    --red:#b3261e; --red-soft:#fdeceb;
+    --amber:#c07a13; --amber-soft:#fdf3e2;
+    --green:#2f7a4f; --green-soft:#e9f6ee;
+    --blue:#2a5a8f; --blue-soft:#eaf1f9;
+    --purple:#6b4a8f; --purple-soft:#f1ecf8;
+    --gold:#b3893a;
+    --shadow:0 1px 2px rgba(28,26,23,.05),0 8px 28px rgba(28,26,23,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper); color:var(--ink); line-height:1.75;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 8% 4%, rgba(179,56,42,.045), transparent 26%),
+      radial-gradient(circle at 92% 8%, rgba(179,137,58,.05), transparent 30%);
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 26px}
+
+  /* ---------- Header ---------- */
+  .hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:600;letter-spacing:.14em;
+    color:var(--red);background:var(--red-soft);border-radius:999px;padding:6px 16px;text-transform:uppercase}
+  h1{font-family:Georgia,"Songti SC","STSong",serif;font-size:2.35rem;line-height:1.28;margin:20px 0 12px;letter-spacing:.01em}
+  h1 .thin{color:var(--ink3);font-weight:400}
+  .lede{font-size:1.06rem;color:var(--ink2);max-width:760px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px 32px;margin-top:26px;font-size:.88rem;color:var(--ink3)}
+  .meta-row b{color:var(--ink);font-weight:600}
+
+  /* ---------- Verdict strip ---------- */
+  .verdicts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:34px 0 8px}
+  .verdict{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .verdict::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+  .verdict .vt{font-size:.74rem;font-weight:700;letter-spacing:.08em;color:var(--c);text-transform:uppercase}
+  .verdict .vv{font-family:Georgia,serif;font-size:1.9rem;font-weight:700;margin:6px 0 2px;color:var(--ink)}
+  .verdict .vd{font-size:.83rem;color:var(--ink3);line-height:1.55}
+
+  /* ---------- Sections ---------- */
+  section{padding:52px 0;border-bottom:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:8px}
+  .sec-num{font-family:Georgia,serif;font-size:.9rem;font-weight:700;color:var(--gold);letter-spacing:.1em}
+  h2{font-family:Georgia,"Songti SC",serif;font-size:1.6rem;letter-spacing:.01em}
+  .sec-sub{color:var(--ink3);font-size:.95rem;margin-bottom:26px;max-width:800px}
+  h3{font-size:1.12rem;margin:30px 0 12px;color:var(--ink)}
+  h3:first-of-type{margin-top:0}
+  p{margin:0 0 12px;color:var(--ink2)}
+  p.tight{margin-bottom:6px}
+
+  /* ---------- Table ---------- */
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin:14px 0;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{text-align:left;padding:12px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f5f1e9;font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2);font-weight:700}
+  tr:last-child td{border-bottom:none}
+  td b{color:var(--ink)}
+  .tnum{font-family:Georgia,serif;font-weight:700}
+
+  /* ---------- Score bars ---------- */
+  .score-block{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow);margin:22px 0}
+  .score-row{margin-bottom:20px}
+  .score-row:last-child{margin-bottom:0}
+  .score-label{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:7px}
+  .score-label .nm{font-weight:600}
+  .score-label .w{color:var(--ink3);font-size:.8rem}
+  .bars{position:relative;height:26px;background:#f2ede4;border-radius:6px;overflow:hidden}
+  .bar-you{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;
+    padding-right:9px;color:#fff;font-size:.76rem;font-weight:700;transition:width 1.2s cubic-bezier(.3,0,.2,1)}
+  .mark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);opacity:.55}
+  .mark-lbl{position:absolute;top:-20px;font-size:.68rem;color:var(--ink3);transform:translateX(-50%);white-space:nowrap}
+  .legend{display:flex;gap:22px;flex-wrap:wrap;font-size:.82rem;color:var(--ink3);margin-top:18px;padding-top:16px;border-top:1px dashed var(--line)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .swatch{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+  /* ---------- Gap cards ---------- */
+  .gap{border:1px solid var(--line);border-radius:14px;background:var(--card);margin:14px 0;box-shadow:var(--shadow);overflow:hidden}
+  .gap-head{display:flex;align-items:flex-start;gap:14px;padding:17px 20px 14px}
+  .sev{flex:none;font-size:.72rem;font-weight:800;letter-spacing:.06em;color:#fff;border-radius:7px;padding:5px 10px;white-space:nowrap;margin-top:2px}
+  .sev.p0{background:var(--red)} .sev.p1{background:var(--amber)} .sev.p2{background:var(--blue)}
+  .gap-title{font-weight:700;font-size:1.02rem;color:var(--ink);line-height:1.5}
+  .gap-why{font-size:.87rem;color:var(--ink3);margin-top:4px;font-weight:400}
+  .gap-body{padding:0 20px 18px 20px;border-top:1px solid var(--line);margin-top:2px;padding-top:16px}
+  .gap-body p{font-size:.91rem;margin-bottom:9px}
+  .gap-body p:last-child{margin-bottom:0}
+  .k{color:var(--ink);font-weight:600}
+  .hit{background:var(--red-soft);color:var(--red);border-radius:4px;padding:1px 6px;font-size:.82rem;font-weight:600;white-space:nowrap}
+  .fix{background:var(--green-soft);color:var(--green);border-radius:4px;padding:1px 6px;font-size:.82rem;font-weight:600}
+
+  /* ---------- roadmap ---------- */
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+  .phase{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .phase .pt{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px}
+  .phase .pn{font-family:Georgia,serif;font-size:1.05rem;font-weight:700;margin-bottom:4px}
+  .phase .pw{font-size:.82rem;color:var(--ink3);margin-bottom:14px}
+  .phase ul{list-style:none;font-size:.88rem;color:var(--ink2)}
+  .phase li{padding:6px 0 6px 20px;position:relative;line-height:1.6;border-top:1px dashed var(--line)}
+  .phase li:first-child{border-top:none}
+  .phase li::before{content:"";position:absolute;left:3px;top:13px;width:6px;height:6px;border-radius:50%;background:var(--pc)}
+  .p0c{--pc:var(--red)} .p1c{--pc:var(--amber)} .p2c{--pc:var(--blue)}
+
+  /* ---------- AI ideas ---------- */
+  .ideas{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:20px}
+  .idea{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .idea .ih{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .idea .ic{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:.95rem;
+    background:var(--purple-soft);color:var(--purple);font-weight:800}
+  .idea .inm{font-weight:700;font-size:.98rem}
+  .idea .idesc{font-size:.87rem;color:var(--ink2);margin-bottom:8px}
+  .idea .iimpl{font-size:.78rem;color:var(--ink3);border-top:1px dashed var(--line);padding-top:8px}
+  .idea .iimpl b{color:var(--blue);font-weight:600}
+
+  /* ---------- callout ---------- */
+  .callout{border-left:4px solid var(--c,var(--gold));background:var(--card);border-radius:0 12px 12px 0;
+    padding:16px 22px;margin:20px 0;box-shadow:var(--shadow)}
+  .callout .ct{font-weight:700;font-size:.95rem;margin-bottom:5px}
+  .callout p{font-size:.9rem;margin:0;color:var(--ink2)}
+
+  ul.clean{list-style:none;margin:10px 0}
+  ul.clean li{padding:5px 0 5px 22px;position:relative;font-size:.91rem;color:var(--ink2)}
+  ul.clean li::before{content:"▸";position:absolute;left:2px;color:var(--gold);font-weight:700}
+
+  footer{padding:40px 0 70px;color:var(--ink3);font-size:.83rem;text-align:center}
+  footer .fnt{margin-top:6px;font-size:.78rem}
+
+  @media(max-width:860px){
+    .verdicts{grid-template-columns:repeat(2,1fr)}
+    .road,.ideas{grid-template-columns:1fr}
+    h1{font-size:1.85rem}
+  }
+  @media(max-width:520px){.verdicts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">◆ 竞赛对标诊断</span>
+    <h1>河南省非遗共创平台 <span class="thin">·</span><br>对标传智杯「AI Web」国奖作品的精进路线</h1>
+    <p class="lede">这份报告把一个真实的静态网站工程（33 项非遗数据、9 个功能页面、约 4200 行手写代码）放进传智杯 AI Web 赛道的官方评分体系里逐项打分，指出它与国奖作品之间的真实差距，并给出一条按优先级排序、可以照着做的改进路径。</p>
+    <div class="meta-row">
+      <span>评测对象：<b>算法网站(3).zip</b>（实际内容＝河南非遗共创平台）</span>
+      <span>对标赛事：<b>传智杯「AI Web 网页开发挑战赛」</b></span>
+      <span>评测日期：<b>2026-10-10</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="verdicts">
+    <div class="verdict" style="--c:var(--green)">
+      <div class="vt">工程完成度</div>
+      <div class="vv">良好</div>
+      <div class="vd">功能闭环完整、代码组织清晰，作为纯静态项目已接近上限</div>
+    </div>
+    <div class="verdict" style="--c:var(--red)">
+      <div class="vt">AI 能力</div>
+      <div class="vv">0 项</div>
+      <div class="vd">赛道叫「AI Web」，项目目前没有任何 AI 功能，属最致命短板</div>
+    </div>
+    <div class="verdict" style="--c:var(--amber)">
+      <div class="vt">对标估分</div>
+      <div class="vv">≈57</div>
+      <div class="vd">按 2024 官方权重重算，距国奖安全线（80+）约差 23 分</div>
+    </div>
+    <div class="verdict" style="--c:var(--blue)">
+      <div class="vt">提升空间</div>
+      <div class="vv">大</div>
+      <div class="vd">短板集中在技术架构，恰恰是权重最高、最容易拉开差距的项</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 1 体检 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><h2>先说清楚：你手里到底是什么</h2></div>
+    <p class="sec-sub">在谈改进之前，先把项目拆开看。很多"改进建议"之所以落不了地，是因为没分清哪些是已经做好的、哪些是根本没做的。</p>
+
+    <h3>项目画像</h3>
+    <table>
+      <tr><th style="width:26%">维度</th><th>实际情况</th></tr>
+      <tr><td><b>主题定位</b></td><td>河南省非物质文化遗产「共创平台」——传承人、设计师、公众三方共创，正好落在赛道的 <b>「文化共创」</b> 主题方向内</td></tr>
+      <tr><td><b>技术形态</b></td><td>纯静态站点：原生 HTML + CSS + 原生 JavaScript，<b>无前端框架、无后端、无数据库、无构建工具</b></td></tr>
+      <tr><td><b>数据与"后端"</b></td><td>数据硬编码在 <span class="tnum">data.js</span>；用浏览器 <span class="tnum">localStorage</span> 冒充数据库，存储用户、作品、报名、收藏</td></tr>
+      <tr><td><b>外部依赖</b></td><td>Font Awesome（图标 CDN）、维基百科 API / 维基共享资源（图片）、LoremFlickr（关键词图）、阿里云 DataV GeoJSON（河南地图边界）</td></tr>
+      <tr><td><b>代码规模</b></td><td>约 <span class="tnum">4150</span> 行（JS ≈ 2200 行、CSS 1001 行、HTML ≈ 950 行），14 个页面 / 13 个 JS 模块</td></tr>
+      <tr><td><b>命名遗留</b></td><td>压缩包叫「算法网站」，但内容是非遗平台；目录里仍留着 <span class="tnum">algorithms.js / algorithm-detail.html</span> 等旧"算法网站"改造残留文件</td></tr>
+    </table>
+
+    <h3>已经做好的部分（这些别动，是加分底盘）</h3>
+    <ul class="clean">
+      <li><b>数据访问层设计规范。</b> 把数据封装成 <span class="tnum">ICH</span> 对象统一暴露 <span class="tnum">getProject / searchProjects / getFeaturedProjects / getStats</span>，职责清晰，比把数据散在页面里强很多。</li>
+      <li><b>一条完整的功能闭环。</b> 注册登录 → 浏览/搜索/筛选项目 → 收藏 → 投稿共创 → 点赞 → 报名活动 → 解锁成就，用户旅程是通的，不是只有首页的门面工程。</li>
+      <li><b>真做了 GIS 可视化。</b> 拉取阿里云 DataV 河南省 GeoJSON，自己实现等距柱状投影把经纬度映射成 SVG，城市光点可悬停出项目提示、可点击跳转。<b>这是全项目技术含量最高的一处</b>，评委容易记住。</li>
+      <li><b>有一套成体系的设计语言。</b> CSS 变量定义了朱砂红/鎏金/宣纸/青玉配色，4 个响应式断点，卡片阴影、过渡动画统一，视觉是有辨识度的"中式文化"风，而不是默认 Bootstrap 味。</li>
+      <li><b>有工程健壮性意识。</b> 图片做了"维基共享资源精确图 → 图片失败回退到维基 API → 再失败就移除走渐变兜底"的三级降级；搜索框、空状态、Toast、确认弹窗都写了。</li>
+      <li><b>有游戏化设计。</b> 8 个成就勋章 + 完成度百分比，能提升用户激励与留存，这在同类作品里算差异化细节。</li>
+    </ul>
+
+    <div class="callout" style="--c:var(--amber)">
+      <div class="ct">一句话结论</div>
+      <p>这是一个"<b>设计用心、工程扎实、但没有技术纵深</b>"的作品。它的短板不是做得不细，而是<b>技术路线选错了方向</b>——它把所有力气都花在了"把静态页面做漂亮"上，而这恰恰是评分权重最低、且人人都会的部分。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 对标基准 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><h2>对标基准：传智杯 AI Web 到底考什么</h2></div>
+    <p class="sec-sub">很多同学对标"国奖作品"时只看别人做了什么功能，其实真正决定分数的是<b>官方评分维度及其权重</b>。先把尺子搞清楚，才知道自己差在哪。</p>
+
+    <h3>赛道硬性要求</h3>
+    <table>
+      <tr><th style="width:26%">要求</th><th>官方原文要点</th></tr>
+      <tr><td><b>核心交付</b></td><td>围绕五大主题之一（智慧教育 / 健康守护 / AI 创业助手 / <b>文化共创</b> / 绿色生活），设计并开发一个<b>融合 AI 技术与 Web 前端框架</b>的网站应用</td></tr>
+      <tr><td><b>项目标准</b></td><td>清晰的场景定位、良好的用户体验、实用性与创新性兼备的功能设计，<b>体现 AI 技术如何助力实际问题的解决与体验优化</b></td></tr>
+      <tr><td><b>技术能力</b></td><td>① 扎实的 HTML/CSS/JS 功底；② <b>深入掌握 Vue 或 React</b>；③ 出色的 UI 设计能力；④ <b>后端开发（Java/Node.js/Python）</b>；⑤ <b>数据库设计</b>；⑥ 测试与上线流程</td></tr>
+      <tr><td><b>提交物</b></td><td>zip 压缩包 ≤ 200MB，内含：项目源码（用脚手架可提交打包后的运行代码）、<b>作品介绍文档 / PPT</b>、<b>演示视频</b></td></tr>
+      <tr><td><b>赛制</b></td><td>初赛（校赛）→ 省赛 → 国赛三级，逐级优化后重新提交，<b>每一级都可以迭代打磨</b></td></tr>
+    </table>
+
+    <div class="callout" style="--c:var(--red)">
+      <div class="ct">⚠ 两个"一票否决"式要求</div>
+      <p>赛道名称与规则里都白纸黑字写了 <b>"AI 技术"</b> 和 <b>"前端框架（Vue/React）"</b>。当前项目这两项<b>均为零</b>。这不是"可以做得更好"的程度，而是<b>没有命中赛道的核心命题</b>，评委看到的第一眼就会打折。</p>
+    </div>
+
+    <h3>官方评分标准（2024 第七届 Web 赛道，满分 100）</h3>
+    <table>
+      <tr><th>评分维度</th><th style="width:11%">权重</th><th>评分要点（"优秀"档标准）</th></tr>
+      <tr><td><b>技术实现</b></td><td class="tnum">25%</td><td>代码规范，技术应用高效，性能优异，<b>无明显缺陷</b>（含"存在重大错误或安全隐患"会掉到最差档）</td></tr>
+      <tr><td><b>用户体验设计</b></td><td class="tnum">20%</td><td>界面美观，交互自然，响应式完善，高度符合用户习惯</td></tr>
+      <tr><td><b>商业价值与可行性</b></td><td class="tnum">20%</td><td>清晰的商业模式、明确的市场定位、高可行性、详尽的市场分析</td></tr>
+      <tr><td><b>上线运营能力</b></td><td class="tnum">20%</td><td>完整上线计划 + <b>项目已上线运营</b>，含推广策略、运维计划、用户反馈机制</td></tr>
+      <tr><td><b>创意与原创性</b></td><td class="tnum">15%</td><td>展现极富创新的商业理念或技术应用，具备独特性与前瞻性</td></tr>
+    </table>
+    <p style="font-size:.83rem;color:var(--ink3)">注：该表取自第七届（2024）Web 网页开发挑战赛官方评分标准；第八届起升级为「AI Web」赛道，维度框架基本延续。早期（2022 第五届）另有"项目创意20 + 技术栈架构10 + 模块完成度15 + 展示效果20 + 完成度30 + 加分5"的体系，可见<b>技术架构与落地完成度一向是评分重心</b>。</p>
+
+    <h3>近几年国奖作品长什么样</h3>
+    <table>
+      <tr><th style="width:22%">奖项 / 院校</th><th>作品特征（来自公开报道）</th></tr>
+      <tr><td><b>国赛一等奖</b><br>榆林学院</td><td>评语关键词：<b>"将智能交互设计、AIGC 内容生成与轻量化前端架构深度融合"</b>；在"功能完整性、技术创新性与用户体验"多维度获评委一致好评</td></tr>
+      <tr><td><b>国赛二等奖</b><br>广东工商职业技术大学</td><td>队伍作品为<b>"完整流畅的 AI 交互网页设计"</b>——注意关键词是"AI 交互"，不是"页面做得漂亮"</td></tr>
+      <tr><td><b>省赛一等奖</b><br>三亚学院</td><td>技术栈明确为 <b>Vue.js + Node.js</b>；亮点：动态数据加载与实时反馈、响应式布局、<b>模块化工程架构</b>、结合大数据做可视化</td></tr>
+    </table>
+
+    <div class="callout" style="--c:var(--blue)">
+      <div class="ct">国奖作品的共同画像</div>
+      <p><b>① 用框架（Vue/React）组织工程；② 有真实后端与数据库；③ AI 是嵌入业务流程的"生产力"，不是贴个聊天框；④ 能讲清商业模式与运营计划；⑤ 有答辩级的技术叙事。</b>这五条，当前项目在前三条上是空白。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 评分 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><h2>五维估分：你现在大概值多少分</h2></div>
+    <p class="sec-sub">下面是我按官方权重、结合代码实况给出的估分。深色刻度线是"国奖安全线"（各维度约需达到的水平）。</p>
+
+    <div class="score-block">
+      <div class="score-row">
+        <div class="score-label"><span class="nm">技术实现 <span class="w">权重 25%</span></span><span style="color:var(--red);font-weight:700">5.5 / 10</span></div>
+        <div class="bars"><div class="bar-you" style="width:55%;background:linear-gradient(90deg,#c94a3f,#b3261e)">5.5</div><span class="mark" style="left:85%"></span></div>
+        <div class="score-label" style="margin-top:5px"><span class="w">原生 JS 无框架、无后端无数据库、密钥明文存储构成明确安全隐患 → 卡在"一般"档</span></div>
+      </div>
+      <div class="score-row">
+        <div class="score-label"><span class="nm">用户体验设计 <span class="w">权重 20%</span></span><span style="color:var(--green);font-weight:700">8.0 / 10</span></div>
+        <div class="bars"><div class="bar-you" style="width:80%;background:linear-gradient(90deg,#3f9a68,#2f7a4f)">8.0</div><span class="mark" style="left:85%"></span></div>
+        <div class="score-label" style="margin-top:5px"><span class="w">强项。设计系统统一、响应式完善、交互与空状态齐备，接近国奖档，但缺无障碍与移动端深度优化</span></div>
+      </div>
+      <div class="score-row">
+        <div class="score-label"><span class="nm">商业价值与可行性 <span class="w">权重 20%</span></span><span style="color:var(--amber);font-weight:700">5.0 / 10</span></div>
+        <div class="bars"><div class="bar-you" style="width:50%;background:linear-gradient(90deg,#d89638,#c07a13)">5.0</div><span class="mark" style="left:85%"></span></div>
+        <div class="score-label" style="margin-top:5px"><span class="w">有"共创"概念，但站内与提交物中<b>看不到任何商业模式、市场分析、盈利路径</b></span></div>
+      </div>
+      <div class="score-row">
+        <div class="score-label"><span class="nm">上线运营能力 <span class="w">权重 20%</span></span><span style="color:var(--red);font-weight:700">3.0 / 10</span></div>
+        <div class="bars"><div class="bar-you" style="width:30%;background:linear-gradient(90deg,#c94a3f,#b3261e)">3.0</div><span class="mark" style="left:85%"></span></div>
+        <div class="score-label" style="margin-top:5px"><span class="w">项目未部署、无域名、无运营与推广方案、无用户反馈机制 → 落在最差档附近</span></div>
+      </div>
+      <div class="score-row">
+        <div class="score-label"><span class="nm">创意与原创性 <span class="w">权重 15%</span></span><span style="color:var(--amber);font-weight:700">5.5 / 10</span></div>
+        <div class="bars"><div class="bar-you" style="width:55%;background:linear-gradient(90deg,#d89638,#c07a13)">5.5</div><span class="mark" style="left:85%"></span></div>
+        <div class="score-label" style="margin-top:5px"><span class="w">"非遗展示平台"同类作品多，且存在"算法网站改造"痕迹，原创叙事需要重塑</span></div>
+      </div>
+      <div class="legend">
+        <span><span class="swatch" style="background:linear-gradient(90deg,#c94a3f,#b3261e)"></span>你的估分（红＝偏弱 / 绿＝强项）</span>
+        <span><span class="swatch" style="background:var(--ink);opacity:.55;width:3px;height:14px;border-radius:2px"></span>国奖安全线（约 8.5）</span>
+      </div>
+      <div style="margin-top:20px;padding-top:18px;border-top:1px solid var(--line);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+        <span style="font-family:Georgia,serif;font-size:1.05rem;color:var(--ink2)">加权总分 ≈</span>
+        <span style="font-family:Georgia,serif;font-size:2.1rem;font-weight:700;color:var(--red)">57.25</span>
+        <span style="color:var(--ink3);font-size:.9rem">/ 100 　·　 若计入「AI Web」赛道对 AI 与框架的硬性要求，实测算得更低</span>
+      </div>
+    </div>
+
+    <p style="font-size:.87rem;color:var(--ink3)">加权公式：5.5×25% + 8.0×20% + 5.0×20% + 3.0×20% + 5.5×15% = 57.25。<b>注意看：你唯一的强项（用户体验）权重只有 20%，而三个短板（技术实现、商业价值、上线运营）合计占了 65%。</b></p>
+  </div>
+</section>
+
+<!-- ============ 4 差距诊断 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><h2>差距诊断：按"扣分严重度"排序</h2></div>
+    <p class="sec-sub">每一条都标注了它挂在哪几个评分维度上。P0 决定你能不能进国赛，P1 决定能不能拿奖，P2 决定能不能拿高奖。</p>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p0">P0 致命</span>
+        <div><div class="gap-title">全站没有任何 AI 能力，与"AI Web"赛道命题完全错位</div>
+        <div class="gap-why">影响维度：创意与原创性、技术实现、赛道命中</div></div>
+      </div>
+      <div class="gap-body">
+        <p>赛道名称是「AI <b>Web</b> 网页开发挑战赛」，规则明确要求作品"<b>融合 AI 技术</b>"，并要"体现 AI 技术如何助力实际问题的解决与体验优化"。而当前项目的所有逻辑都是纯前端静态渲染：搜索用的是 <span class="k">String.includes()</span> 的字符串匹配，推荐用的是按 <span class="k">popularity</span> 字段降序排，没有任何模型调用、没有智能推荐、没有语义理解、没有内容生成。</p>
+        <p><b class="k">为什么致命：</b>这不是"少了一个亮点"，而是<b>答错了题</b>。评委打开项目找不到 AI，第一印象就归类为"普通静态展示站"，后面再漂亮也很难救回来。</p>
+        <p><span class="fix">怎么改</span> 见第 6 节的 8 个 AI 功能设计，至少落地 3 个（推荐：AI 非遗问答 + AI 文创生成 + 智能语义搜索），且 AI 必须嵌入业务流程而非孤立聊天框。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p0">P0 致命</span>
+        <div><div class="gap-title">没有使用前端框架（Vue / React），未满足技术能力要求</div>
+        <div class="gap-why">影响维度：技术实现（25%）、技术栈架构</div></div>
+      </div>
+      <div class="gap-body">
+        <p>官方技术能力第②条写的是"<b>深入掌握前端主流框架 Vue 或 React</b>"，国奖/省奖作品普遍是 Vue.js 或 React + Node.js 的现代技术栈。当前项目是原生多页应用（MPA），每个页面重复引入 <span class="k">data.js + script.js</span>，靠 <span class="k">innerHTML</span> 拼接字符串渲染，没有组件化、没有状态管理、没有路由。</p>
+        <p><b class="k">为什么致命：</b>25% 权重的"技术实现"维度里，"技术应用高效、代码规范"是拿分关键。原生 <span class="k">innerHTML</span> 拼串在评委眼里属于"能跑但不够专业"，直接压在"一般"档，25% 的分几乎全丢。</p>
+        <p><span class="fix">怎么改</span> 用 <b>Vue 3 + Vite</b>（学习曲线比 React 平缓，且国内教学资源多）重构：把页面拆成组件（ProjectCard、WorkCard、NavBar…），用 Pinia 管登录态，用 Vue Router 管路由，把 data.js 抽成 store 或 API 层。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p0">P0 致命</span>
+        <div><div class="gap-title">没有后端与数据库，用 localStorage 冒充，且密码明文存储</div>
+        <div class="gap-why">影响维度：技术实现（25%）、上线运营能力（20%）、安全隐患</div></div>
+      </div>
+      <div class="gap-body">
+        <p>所有"数据"都存在用户浏览器的 localStorage 里：注册的用户存在 <span class="k">henanICHUsers</span>，登录态存在 <span class="k">henanICHCurrentUser</span>，作品、报名、收藏同理。这意味着<b>换一台设备、换一个浏览器，数据全部消失</b>；所谓"平台"实际上只是"本机演示"。</p>
+        <p><b class="k">更严重的是安全隐患：</b>注册时 <span class="k">password</span> 被<b>原样明文</b>写进 localStorage（见 auth.js），登录时用 <span class="k">u.password === password</span> 直接比对。而官方"技术实现"维度里明确写着："存在重大错误或<b>安全隐患</b>"直接掉到最差档（0–4 分）。这一条足以单独扣掉几分。</p>
+        <p><span class="fix">怎么改</span> 加一个后端（Node.js + Express 或 Python + FastAPI），数据库用 MySQL / PostgreSQL / SQLite；密码必须 <b>bcrypt 加盐哈希</b>存储，用 <b>JWT / Session</b> 管理登录态。这是硬性补齐项，没有它"上线运营"20% 也拿不到。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p1">P1 重要</span>
+        <div><div class="gap-title">内容可信度存疑：图片与关键词不匹配、传承人信息为"示范性展示"</div>
+        <div class="gap-why">影响维度：商业价值与可行性、创意与原创性、作品严谨性</div></div>
+      </div>
+      <div class="gap-body">
+        <p>这是很多团队忽略、但评委一问就露馅的地方：</p>
+        <p>① <b>图片与内容不相关。</b> 项目对大多数非遗用的是 <span class="k">LoremFlickr</span> 按英文关键词随机取图（如 <span class="k">"chinese,opera,stage"</span>），返回的是<b>与具体非遗无关的随机照片</b>。豫剧卡片底下可能挂着一张欧美歌剧照——这在答辩现场是灾难。</p>
+        <p>② <b>数据来源没交代。</b> 只有 6 个项目配了维基共享资源的精确照片，其余靠关键词兜底；顶部却没有任何"数据来源"标注或引用。</p>
+        <p>③ <b>传承人信息风险。</b> data.js 自己注明"传承人信息为示范性展示"，但页面上用的是<b>真实姓名、头衔与生平描述</b>。这类"未经授权使用真人信息、内容可能不准确"的做法，既可能踩到知识产权/名誉权红线，也会被评委质疑"数据是编的"。</p>
+        <p><span class="fix">怎么改</span> 一律换成<b>可溯源的官方图源</b>（文旅部门官方图库、自有拍摄、明确授权的素材）；每条项目标注来源链接；真实人物信息要么取官方公示内容并注明出处，要么<b>匿名化/化名处理</b>。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p1">P1 重要</span>
+        <div><div class="gap-title">完全没有"上线运营"证据，20% 权重基本放弃</div>
+        <div class="gap-why">影响维度：上线运营能力（20%）</div></div>
+      </div>
+      <div class="gap-body">
+        <p>"上线运营能力"占 20%，要求"<b>项目以上线运营</b>，包括市场推广策略、运维计划、用户反馈机制"。当前项目：没有部署（还是本地 zip）、没有域名、没有可访问的线上地址、没有推广方案、没有运维/反馈设计。</p>
+        <p><span class="fix">怎么改</span> 三步走：<b>① 真的把它部署上线</b>（Vercel / 阿里云 ECS / 腾讯云轻量服务器，挂个域名）；<b>② 在提交文档里写运营方案</b>（种子用户从哪来、内容怎么更新、和文旅局/学校非遗社团怎么合作、数据怎么埋点回收）；<b>③ 做出至少一轮真实用户数据</b>（哪怕 50 个种子用户、200 次浏览，截图放进 PPT，含金量远高于空谈）。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p1">P1 重要</span>
+        <div><div class="gap-title">缺"商业模式 + 市场分析"文档，商业价值维度拿不到分</div>
+        <div class="gap-why">影响维度：商业价值与可行性（20%）</div></div>
+      </div>
+      <div class="gap-body">
+        <p>官方标准是"清晰的商业模式、明确的市场定位、<b>详尽的市场分析</b>"。项目有"非遗共创"这个概念，但没有任何落地为生意的说明：谁来买单？文创作品如何变现？和传承人怎么分账？平台抽佣还是内容付费？目标用户画像是什么？市场有多大？</p>
+        <p><span class="fix">怎么改</span> 补一份 3–5 页的商业计划：目标用户（院校师生/文创消费者/文旅单位）、价值主张、变现路径（共创作品打样分成 / 文创电商抽佣 / 非遗研学课程 / 政企数字化服务）、竞品对比、SOM/TAM 粗估。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p2">P2 加分</span>
+        <div><div class="gap-title">搜索与推荐的"智能度"低，是无 AI 的直接症状</div>
+        <div class="gap-why">影响维度：创意与原创性、用户体验</div></div>
+      </div>
+      <div class="gap-body">
+        <p>搜索是 <span class="k">includes()</span> 子串匹配，搜"戏曲"匹配不到"豫剧"（除非标签里有），没有同义词/拼音/纠错/语义能力；"精选项目"是按 <span class="k">popularity</span> 字段硬排；"相关共创作品"是按 <span class="k">projectId</span> 精确相等过滤。这些都不是"个性化"或"智能"。</p>
+        <p><span class="fix">怎么改</span> 用<b>向量语义检索</b>替代子串匹配（user query → embedding → 与项目向量算余弦相似度），即可实现"搜'唱戏的'也能找到豫剧、曲剧"。这是补齐 AI 最省力的切入口。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p2">P2 加分</span>
+        <div><div class="gap-title">工程化与质量保障缺失：无构建、无测试、无 SEO、无无障碍</div>
+        <div class="gap-why">影响维度：技术实现、用户体验</div></div>
+      </div>
+      <div class="gap-body">
+        <p>① <b>无构建工具</b>（无 Webpack/Vite）——源码不做压缩、不做资源指纹、直接裸发；② <b>无任何测试</b>（无单元/端到端），而官方技术能力第⑥条明确要求"测试与上线流程"；③ <b>SEO 弱</b>——内容全靠 JS 运行时渲染，爬虫抓不到正文，也没有 sitemap/结构化数据；④ <b>无障碍缺失</b>——图标按钮、地图光点、轮播控件普遍没有 <span class="k">aria-label</span>，键盘与读屏用户不可用。</p>
+        <p><span class="fix">怎么改</span> 迁移到 Vite（自带构建与压缩）；补 Vitest/Playwright 冒烟测试；用 SSG/SSR（如 Nuxt）或至少给关键页做预渲染；给交互元素补 ARIA 属性。</p>
+      </div>
+    </div>
+
+    <div class="gap">
+      <div class="gap-head">
+        <span class="sev p2">P2 加分</span>
+        <div><div class="gap-title">"算法网站"改造痕迹未清理，叙事不统一</div>
+        <div class="gap-why">影响维度：创意与原创性、作品完整性</div></div>
+      </div>
+      <div class="gap-body">
+        <p>压缩包与目录名仍叫「算法网站」，工程里保留着 <span class="k">algorithms.js</span>（内容只有一句"已被 projects.js 取代"）、<span class="k">algorithm-detail.html</span>（一个 0 秒跳转的空壳）。评委若翻源码看到这些，会立刻意识到这是"别的项目改的"，损害原创性印象。</p>
+        <p><span class="fix">怎么改</span> 彻底删除无用残留文件、统一命名、重写 README 与技术方案，让整个项目的"故事"从头到尾自洽。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5 路线图 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><h2>精进路线图：按优先级分三阶段</h2></div>
+    <p class="sec-sub">不要一上来就全部推倒重来。按下面的顺序做，每一阶段结束都是一个"能提交、能答辩"的完整版本（省赛→国赛恰好是三级赛制，天然对应三轮迭代）。</p>
+
+    <div class="road">
+      <div class="phase p0c">
+        <div class="pt" style="color:var(--red)">P0 · 先救命</div>
+        <div class="pn">把赛道命题补上</div>
+        <div class="pw">目标：从"静态站"变成"AI Web 应用"</div>
+        <ul>
+          <li>接入大模型 API（通义/DeepSeek/智谱），落地 <b>AI 非遗问答</b>（RAG 检索项目库作答）</li>
+          <li>用 <b>Vue 3 + Vite</b> 重构前端，拆组件、加路由与状态管理</li>
+          <li>加后端（Node/Express）+ 数据库，迁出 localStorage</li>
+          <li>密码 <b>bcrypt 哈希</b> + JWT 登录，消除明文存储隐患</li>
+        </ul>
+      </div>
+      <div class="phase p1c">
+        <div class="pt" style="color:var(--amber)">P1 · 来拿奖</div>
+        <div class="pn">补齐内容、运营与商业</div>
+        <div class="pw">目标：让评委看到"真实、可信、能落地"</div>
+        <ul>
+          <li>全部替换为<b>可溯源官方图源</b>，每条数据标注来源</li>
+          <li>真实人物信息合规化处理（授权或化名）</li>
+          <li>部署上线 + 域名，做出<b>真实用户数据</b>截图</li>
+          <li>补<b>商业计划书</b>（模式/定位/市场/竞品）</li>
+          <li>补运营方案（推广/运维/用户反馈机制）</li>
+        </ul>
+      </div>
+      <div class="phase p2c">
+        <div class="pt" style="color:var(--blue)">P2 · 冲高奖</div>
+        <div class="pn">技术与体验纵深</div>
+        <div class="pw">目标：从"能拿奖"到"拿一等奖"</div>
+        <ul>
+          <li>再补 2 个 AI 功能（文生图文创设计、语义搜索）</li>
+          <li>加测试（Vitest / Playwright）+ 构建优化 + 性能预算</li>
+          <li>SEO：SSG/预渲染 + 结构化数据 + sitemap</li>
+          <li>无障碍：ARIA、键盘导航、对比度达标</li>
+          <li>清理"算法网站"残留、重写 README 与技术叙事</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout" style="--c:var(--green)">
+      <div class="ct">投入产出判断</div>
+      <p>如果目标是<b>先把分数拉过国奖线</b>，性价比最高的是"<b>Vue 重构 + 接入一个 AI 问答 + 部署上线"</b>这三件事：它们分别补齐了权重最高的"技术实现"、赛道硬要求的"AI"、以及"上线运营"三项，预计能把估分从 57 拉到 75+。<b>商业计划书</b>再补上，冲 80+ 是比较现实的。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6 AI 功能 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><h2>「文化共创」主题下，可以做什么 AI 功能</h2></div>
+    <p class="sec-sub">这是全报告最该抄走的部分。一个好原则是：<b>AI 要长在业务流程里，而不是首页挂一个聊天框</b>。下面 8 个功能都能复用到这个非遗项目上，★ 标记的是最推荐优先做的。</p>
+
+    <div class="ideas">
+      <div class="idea">
+        <div class="ih"><span class="ic">1</span><span class="inm">AI 非遗知识问答（RAG）★</span></div>
+        <div class="idesc">把 33 条项目数据、传承人、历史渊源做成知识库，用户问"钧瓷的窑变是怎么回事""河南有哪些戏曲"时，模型基于知识库作答并给出处。</div>
+        <div class="iimpl"><b>实现：</b>数据向量化 → 向量库（Chroma/Milvus）→ 检索 + 大模型生成。可复用现有 ICH 数据层。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">2</span><span class="inm">AI 文创设计生成（文生图）★</span></div>
+        <div class="idesc">用户选一个非遗（如"汴绣"）+ 一个风格（如"国潮"），AI 生成该元素的文创图案/纹样/周边效果图——直接服务"共创"这个核心概念。</div>
+        <div class="iimpl"><b>实现：</b>文生图 API（通义万相 / 即梦等），把非遗关键词 + 风格词拼成 prompt，生成结果回流到共创广场。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">3</span><span class="inm">智能语义搜索 ★</span></div>
+        <div class="idesc">把前端的 <span class="k">includes()</span> 换成向量语义检索："唱戏的""会响的泥玩具""青色的瓷器"都能命中豫剧、泥咕咕、汝瓷。</div>
+        <div class="iimpl"><b>实现：</b>项目描述预先 embedding 入库，查询时算余弦相似度排序；成本低、见效快。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">4</span><span class="inm">AI 个性化推荐</span></div>
+        <div class="idesc">基于用户收藏/浏览/点赞行为，推荐"你可能感兴趣的非遗"。替代现在的按热度硬排。</div>
+        <div class="iimpl"><b>实现：</b>起步用内容相似度（用户的收藏项目向量做质心），进阶用协同过滤。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">5</span><span class="inm">AI 共创助手</span></div>
+        <div class="idesc">投稿时用户只写一句模糊创意，AI 帮它扩写成完整的产品定位、目标人群、设计说明、标签——降低投稿门槛，提高作品质量。</div>
+        <div class="iimpl"><b>实现：</b>表单内嵌大模型改写；可顺带自动生成标签与分类。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">6</span><span class="inm">AI 语音讲解 / 口述史整理</span></div>
+        <div class="idesc">把非遗简介转成音频讲解（TTS + 数字人），或把传承人口述的录音做 ASR + 摘要，沉淀成结构化内容。契合"非遗影像库/口述史"的真实需求。</div>
+        <div class="iimpl"><b>实现：</b>ASR（语音识别）+ LLM 摘要 + TTS 合成；可对接"数字化赋能非遗"政策叙事。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">7</span><span class="inm">非遗知识图谱可视化</span></div>
+        <div class="idesc">把"项目—传承人—地区—技艺—关联作品"做成可交互的知识图谱，点一个节点带出一片关系网。和你已有的地图可视化形成组合拳。</div>
+        <div class="iimpl"><b>实现：</b>用 ECharts Graph / Cytoscape.js 渲染；关系由 LLM 从文本抽取。</div>
+      </div>
+      <div class="idea">
+        <div class="ih"><span class="ic">8</span><span class="inm">AI 多模态识别（拍照识非遗）</span></div>
+        <div class="idesc">用户上传一张瓷器/脸谱/年画照片，AI 识别出对应的非遗门类并跳转到详情页。移动端体验极佳，适合放进演示视频。</div>
+        <div class="iimpl"><b>实现：</b>多模态视觉模型（VLM）分类 + 相似检索；作为"炫技"亮点。</div>
+      </div>
+    </div>
+
+    <div class="callout" style="--c:var(--purple)">
+      <div class="ct">最小可行组合（建议照这个抄）</div>
+      <p>先做 <b>① AI 问答 + ③ 语义搜索 + ② 文生图共创</b> 这三个。它们共同的特点是：<b>复用你已有的非遗数据、强绑定「文化共创」主题、且能在 3 分钟演示视频里形成"输入—AI 处理—输出"的完整闭环</b>。这正是国奖评语里"智能交互设计 + AIGC 内容生成深度融合"的直接对应。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 提交清单 ============ -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><h2>提交前对照清单</h2></div>
+    <p class="sec-sub">很多好作品不是死在功能上，而是死在"该交的东西没交全"。按官方要求逐项打勾。</p>
+    <table>
+      <tr><th style="width:34%">提交项</th><th>要求 / 要点</th><th style="width:12%">状态</th></tr>
+      <tr><td><b>项目源码</b></td><td>完整源码；若用脚手架可提交打包后运行代码。<b>务必删掉 localStorage 明文密码等隐患</b></td><td style="color:var(--red);font-weight:700">待改</td></tr>
+      <tr><td><b>作品介绍文档</b></td><td>项目详情、使用方式、<b>亮点</b>、关键技术、相关图片；说明是否为首次公开发布</td><td style="color:var(--amber);font-weight:700">待补</td></tr>
+      <tr><td><b>演示 PPT</b></td><td>场景定位、AI 能力、技术架构、市场与运营、团队分工</td><td style="color:var(--amber);font-weight:700">待补</td></tr>
+      <tr><td><b>演示视频</b></td><td>3 分钟内讲清"AI 如何解决真实问题"；建议录音+字幕，展示完整 AI 交互闭环</td><td style="color:var(--amber);font-weight:700">待补</td></tr>
+      <tr><td><b>压缩包规范</b></td><td>仅接受 zip，≤ 200MB，命名＝学校+姓名+手机号</td><td style="color:var(--ink3);font-weight:700">注意</td></tr>
+      <tr><td><b>商业计划 / 运营方案</b></td><td>虽非强制附件，但直接对应 40% 权重（商业价值 + 上线运营），强烈建议随文档提交</td><td style="color:var(--red);font-weight:700">待补</td></tr>
+    </table>
+
+    <div class="callout" style="--c:var(--gold)">
+      <div class="ct">最后提醒一句</div>
+      <p>这个项目的<b>底子不差</b>——设计系统、数据组织、地图可视化都是有心的作品。它缺的不是"努力"，而是"<b>技术方向的选择</b>"。把力气从"继续雕琢静态页面"转移到"框架化 + 加 AI + 真上线"上，是当前投入产出比最高的一步。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>本报告基于对「算法网站(3).zip」全部 42 个文件的静态代码审计（约 4150 行）与公开赛事资料的交叉核对生成。</p>
+    <p class="fnt">评分标准引自 2024 第七届传智杯 Web 网页开发挑战赛官方评分表；国奖作品特征引自各院校公开报道。估分为分析性判断，非官方评分，仅供参考。</p>
+    <p class="fnt">生成日期：2026-10-10　·　供竞赛备赛与项目迭代使用</p>
+  </div>
+</footer>
+
+</body>
+</html>
