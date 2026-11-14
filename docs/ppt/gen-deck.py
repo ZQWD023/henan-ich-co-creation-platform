@@ -173,7 +173,7 @@ text(
 text(s, IN(1.15), IN(4.55), IN(6.2), IN(1.2), [
     ("团队：（待填写）", 13, False, RGBColor(0xC9, 0xB8, 0x9A), 6),
     ("学校：（待填写）　　指导教师：（待填写）", 13, False, RGBColor(0xC9, 0xB8, 0x9A), 6),
-    ("在线演示：（待填写）　　仓库：（待填写）", 13, False, RGBColor(0xC9, 0xB8, 0x9A)),
+    ("在线演示：https://zqwd023.github.io/henan-ich-co-creation-platform/　　仓库：https://github.com/ZQWD023/henan-ich-co-creation-platform", 13, False, RGBColor(0xC9, 0xB8, 0x9A)),
 ])
 text(s, W - IN(4.2), IN(6.55), IN(3.6), IN(0.4), [("49 个项目 · 506 知识片段 · 5 个 AI 工具", 11, False, GOLD)], align=PP_ALIGN.RIGHT)
 
@@ -475,8 +475,8 @@ text(s, IN(1.0), IN(2.2), IN(11.3), IN(0.9), [("让手艺被看见，让创意�
 text(s, IN(1.0), IN(3.25), IN(11.3), IN(0.5), [("下一步：TypeScript 迁移 · 端侧向量检索 · 100+ 题评测集 · 3 个地市试点", 14, False, RGBColor(0xE8, 0xD9, 0xB8))])
 rect(s, IN(1.0), IN(4.05), IN(2.2), Pt(2), fill=GOLD)
 text(s, IN(1.0), IN(4.4), IN(11.3), IN(1.2), [
-    ("在线演示：（待填写）", 12, False, RGBColor(0xC9, 0xB8, 0x9A), 3),
-    ("代码仓库：（待填写）　评审账号：reviewer / （待填写）", 12, False, RGBColor(0xC9, 0xB8, 0x9A), 3),
+    ("在线演示：https://zqwd023.github.io/henan-ich-co-creation-platform/", 12, False, RGBColor(0xC9, 0xB8, 0x9A), 3),
+    ("代码仓库：https://github.com/ZQWD023/henan-ich-co-creation-platform　评审账号：reviewer / Reviewer@2026", 12, False, RGBColor(0xC9, 0xB8, 0x9A), 3),
     ("技术文档：技术文档.pdf（16 页）　自检：npm run verify", 12, False, RGBColor(0xC9, 0xB8, 0x9A)),
 ])
 text(s, W - IN(3.2), H - IN(0.75), IN(2.6), IN(0.4), [("谢谢评审老师", 13, True, GOLD)], align=PP_ALIGN.RIGHT)

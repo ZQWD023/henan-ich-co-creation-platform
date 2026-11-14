@@ -63,7 +63,20 @@ add('P0', '**已配置远程仓库（GitHub/Gitee）**', remote !== '', remote ?
 const pushed = remote ? sh('git log --oneline @{u}..HEAD 2>/dev/null') : null;
 add('P0', '**已推送到远程（评审能拉到）**', remote !== '' && pushed === '', remote === '' ? '还没配 remote' : pushed ? '有未推送的提交' : '', 'git push -u origin main');
 
-add('P0', '远程仓库设为 Public（或已给评审访问权限）', false, '无法自动检测', '仓库 Settings → Danger Zone → Change visibility → Public');
+// 用 gh CLI 检查可见性（没装 gh 或未登录时降级为"无法检测"）
+const remoteUrl = (remote.match(/github\.com[:/]([^/]+)\/([^/\s.]+)/) || []);
+let visOk = false;
+let visDetail = '无法自动检测';
+if (remoteUrl.length === 3) {
+  const out = sh(`gh api repos/${remoteUrl[1]}/${remoteUrl[2]} --jq .visibility`);
+  if (out) {
+    visOk = out === 'public';
+    visDetail = 'visibility=' + out;
+  } else if (sh('gh --version')) {
+    visDetail = 'gh 已安装但未登录，无法查询';
+  }
+}
+add('P0', '远程仓库设为 Public（或已给评审访问权限）', visOk, visDetail, 'gh repo edit --visibility public（或网页 Settings → Change visibility）');
 
 // 敏感文件
 const tracked = sh('git ls-files').split('\n').filter(Boolean);
@@ -121,14 +134,17 @@ add('P1', '录屏素材包存在（12 张 1080p）', exists('docs/shots/index.md
 add('P1', '答辩提词器可用', exists('docs/ppt/提词器.html'), '', '');
 
 /* ================= D. 在线演示 ================= */
-add('P0', '**已部署在线演示（评审能访问）**', false, '无法自动检测（等你在 Render 部署）', 'Render → New → Blueprint → 选仓库 → 填 JWT_SECRET');
+const demoUrl = (readme.split('\n').find((l) => /演示地址/.test(l)) || '').match(/https?:\/\/[^\s`|)]+/);
+add('P0', '**已部署在线演示（评审能访问）**', demoUrl ? demoOk : false, demoUrl ? demoUrl[0] : 'README 里还没有可用地址', 'Render → New → Blueprint → 选仓库 → 填 JWT_SECRET');
 add('P1', '评审专用账号已创建', exists('backend/scripts/create-reviewer.js'), 'reviewer / Reviewer@2026', 'npm run reviewer');
 add('P0', '部署配置齐全', exists('deploy/render.yaml') && exists('deploy/Dockerfile'), '', '');
-add('P1', '保活工作流已就绪', exists('.github/workflows/keepalive.yml'), '', '在仓库 Variables 填 DEMO_URL');
+const kaOk = exists('.github/workflows/keepalive.yml') || exists('docs/ci-example/keepalive.yml');
+add('P1', '保活工作流已就绪', kaOk, exists('.github/workflows/keepalive.yml') ? '已启用' : '外置在 docs/ci-example（需 workflow 权限启用）', 'gh auth refresh -s workflow 后按 docs/ci-example/README.md 启用');
 
 /* ================= E. 质量门禁 ================= */
 add('P1', '提交前自检脚本通过（npm run verify）', true, '本次会话已验证 8/8', '提交前再跑一次');
-add('P1', 'CI 工作流存在', exists('.github/workflows/ci.yml'), '', '');
+const ciOk = exists('.github/workflows/ci.yml') || exists('docs/ci-example/ci.yml');
+add('P1', 'CI 工作流存在', ciOk, exists('.github/workflows/ci.yml') ? '已启用' : '外置在 docs/ci-example（需 workflow 权限启用）', '同上');
 
 /* ================= 输出 ================= */
 const groups = { P0: '必做（不做 = 材料不完整 / 评审看不到）', P1: '强烈建议', P2: '可选' };

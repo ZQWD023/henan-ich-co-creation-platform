@@ -88,7 +88,7 @@
 
 | 项 | 值 |
 |---|---|
-| 演示地址 | `（待填：https://xxx.onrender.com）` |
+| 演示地址 | `https://zqwd023.github.io/henan-ich-co-creation-platform/` |
 | 评审账号 | `reviewer` / `Reviewer@2026`（跑 `npm run reviewer` 生成/重置） |
 | 演示账号 | `creator` / `123456`（可体验发布与协作） |
 
