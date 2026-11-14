@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Lint + Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dev deps (eslint / prettier)
+        run: npm install --no-audit --no-fund
+
+      - name: ESLint（前端 js + 后端 + launcher，0 错误 0 告警）
+        run: npm run lint
+
+      - name: Prettier check（新增模块）
+        run: npm run format:check
+
+      - name: TypeScript 类型检查（checkJs + JSDoc）
+        run: npm run typecheck
+
+      - name: Install backend deps
+        run: npm --prefix backend ci --no-audit --no-fund
+
+      - name: 初始化数据库（schema + 种子数据）
+        run: npm --prefix backend run setup
+
+      - name: 单元测试（RAG / 安全 / Agent / 认证）
+        run: npm --prefix backend test
+
+      - name: RAG / Agent 评测（生成报告，失败不阻断但会留下产物）
+        run: npm --prefix backend run eval:rag
+        continue-on-error: true
+
+      - name: 上传评测报告
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rag-eval-report
+          path: backend/docs/rag-eval-report.md
+          if-no-files-found: ignore
