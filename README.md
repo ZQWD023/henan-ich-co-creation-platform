@@ -84,16 +84,19 @@
 → 自动完成：检查 Node → 安装依赖 → 生成 `.env` → 首次自动导入非遗数据与演示项目 → 启动服务 → 打开浏览器。
 页面每 4 秒自动探测后端，服务起来后会自动把「离线演示」切回真实数据。
 
-**在线演示（部署后填这里）**
+**在线演示**
 
-| 项 | 值 |
-|---|---|
-| 演示地址 | `https://zqwd023.github.io/henan-ich-co-creation-platform/`（GitHub Pages 静态演示：浏览与 AI 实验室可用，写操作需本地后端） |
-| 代码仓库 | `https://github.com/ZQWD023/henan-ich-co-creation-platform` |
-| 评审账号 | `reviewer` / `Reviewer@2026`（跑 `npm run reviewer` 生成/重置） |
-| 演示账号 | `creator` / `123456`（可体验发布与协作） |
+| 项 | 值 | 适用范围 |
+|---|---|---|
+| 演示地址 | `https://zqwd023.github.io/henan-ich-co-creation-platform/` | **静态演示**（GitHub Pages）：浏览、项目库、AI 实验室（以图搜非遗 / 纹样生成）完全可用；**写操作需后端** |
+| 代码仓库 | `https://github.com/ZQWD023/henan-ich-co-creation-platform` | — |
+| 静态演示怎么登 | 点右上角「登录」，用离线演示账号 `creator` / `123456`（无需后端） | Pages 静态站 |
+| 完整版评审账号 | `reviewer` / `Reviewer@2026`（`npm run reviewer` 生成/重置） | **需要后端**（Render / Docker / 本地 `启动网站.bat`）才有此账号 |
+| 完整版演示账号 | `creator` / `123456`（可体验发布与协作） | 需要后端 |
 
-部署完成后跑一次自检（30 秒，9 项）：`npm run deploy:check -- https://你的域名 --with-login reviewer Reviewer@2026`
+> ⚠️ 静态站（Pages）没有后端，所以 `reviewer` 这个账号在 Pages 上登录不进去 —— 那是完整版的账号。
+> 想在 Pages 上体验，请用 `creator / 123456`（自动进入离线演示模式）。
+> 完整版部署完成后跑一次自检（约 30 秒）：`npm run deploy:check -- https://你的域名 --with-login reviewer Reviewer@2026`
 
 **可选：网页上的按钮直接拉起后端**（本机便利，需一次性安装）
 双击 `tools/安装一键启动.cmd` 注册 `ich://` 协议 → 之后在网页「离线演示」提示里点「一键启动后端」即可。

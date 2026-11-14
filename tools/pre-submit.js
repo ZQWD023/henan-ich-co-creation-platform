@@ -128,7 +128,15 @@ const ppt = walk('docs', (n) => n.endsWith('.pptx'));
 add('P1', '答辩 PPT 存在', ppt.length > 0, ppt.join(', '), 'python docs/ppt/gen-deck.py');
 
 const mp4 = walk('.', (n) => /\.(mp4|mov)$/i.test(n));
-add('P0', '**演示视频已录制（MP4）**', mp4.length > 0, mp4.join(', '), '照 docs/shots/index.md 录 5-8 分钟 1080p MP4，放到仓库根或交付目录');
+const mp4Sizes = mp4.map((f) => ({ f, mb: Math.round((fs.statSync(path.join(ROOT, f)).size / 1048576) * 10) / 10 }));
+const mp4Big = mp4Sizes.filter((x) => x.mb > 100);
+add(
+  'P0',
+  '**演示视频已录制（MP4）**',
+  mp4.length > 0 && mp4Big.length === 0,
+  mp4.length ? mp4Sizes.map((x) => x.f + ' (' + x.mb + 'MB)').join(', ') : '',
+  '照 docs/shots/index.md 录 5-8 分钟 1080p MP4；**不要直接 git 提交 >100MB 的 MP4**（GitHub 会拒收），放官网提交入口或网盘链接'
+);
 
 add('P1', '录屏素材包存在（12 张 1080p）', exists('docs/shots/index.md'), '', 'npm run shots');
 add('P1', '答辩提词器可用', exists('docs/ppt/提词器.html'), '', '');
