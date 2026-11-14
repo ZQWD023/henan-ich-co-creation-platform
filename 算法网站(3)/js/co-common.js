@@ -192,12 +192,23 @@ function coLaunchLinkHtml(prefix) {
   return `${prefix || ''}<a href="ich://start" onclick="return launchBackendHint()" style="color:var(--primary);text-decoration:underline;">一键启动后端</a>`;
 }
 
+/** 是否部署在纯静态托管（GitHub Pages / Netlify 等）：无后端，但支持浏览器本地写入 */
+function coIsStaticHost() {
+  return /(^|\.)github\.io$|(^|\.)netlify\.app$|(^|\.)vercel\.app$|(^|\.)pages\.dev$/.test(location.hostname);
+}
+
 function coOfflineNote(what = '内容') {
   const launch = coLaunchLinkHtml('也可以 ') ? coLaunchLinkHtml('也可以 ') + '（首次需运行一次 tools\\安装一键启动.cmd）' : '';
+  const staticHost = coIsStaticHost();
+  const body = staticHost
+    ? `这是<b>静态演示站</b>（GitHub Pages，没有后端）：页面、AI 问答、以图搜非遗、纹样生成都能用；
+       你发起的项目 / 申请记录<b>只保存在你自己的浏览器里</b>（刷新还在，换设备或清缓存会消失）。
+       想体验完整的审核与任务协作，请本地运行 <b>启动网站.bat</b>（或部署 <code>deploy/</code> 里的渲染配置）。`
+    : `当前是<b>离线演示模式</b>：这里的${coEsc(what)}来自内置示例数据（后端未启动）。
+       启动后端后即为完整的发布、审核、任务协作功能：双击项目根目录的 <b>启动网站.bat</b>${launch ? '，' + launch : ''}。`;
   return `<div class="co-offline-note" style="grid-column:1/-1;">
       <i class="fas fa-cloud"></i>
-      <span>当前是<b>离线演示模式</b>：这里的${coEsc(what)}来自内置示例数据（后端未启动）。
-      启动后端后即为完整的发布、审核、任务协作功能：双击项目根目录的 <b>启动网站.bat</b>${launch ? '，' + launch : ''}。</span>
+      <span>${body}</span>
     </div>`;
 }
 
