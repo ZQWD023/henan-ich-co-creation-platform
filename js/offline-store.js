@@ -458,7 +458,8 @@
         tasks: raw.tasks || [],
         versions: raw.versions || [],
         discussions: raw.discussions || [],
-        myMemberStatus: mine ? null : applied ? 'pending' : null,
+        // 演示模式：把当前登录用户当作已加入的成员，这样任务看板/讨论可见（只是演示，不会写库）
+        myMemberStatus: mine ? null : 'approved',
         isOwner: !!mine,
         canEdit: !!mine,
         __offline: true,
@@ -507,6 +508,13 @@
       writeJson(K_CREATED, list);
       markOffline();
       return stored;
+    },
+
+    /** 讨论列表（静态演示版）：返回与后端同形的 { list, total } */
+    discussions(id) {
+      const raw = createdProjects().find((p) => p.id === id) || DEMO_PROJECTS.find((p) => p.id === id);
+      const list = (raw && raw.discussions) || [];
+      return { list, total: list.length, page: 1, pageSize: list.length || 10 };
     },
 
     /** 申请加入（静态演示版：记下 pending 状态） */
