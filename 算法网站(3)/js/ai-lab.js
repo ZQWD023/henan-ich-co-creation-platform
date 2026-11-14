@@ -97,6 +97,11 @@
             } else if (evt.type === 'result') {
               agent.result = evt.result;
               renderResult(evt.result);
+              // 标注规划方式：LLM 自主调用工具 vs 规则编排（同一套工具、同一套 trace）
+              const planner = (evt.result && evt.result.meta && evt.result.meta.planner) || 'rules';
+              if (planner === 'llm') {
+                appendSystemNote('本次由大模型自主选择工具完成规划（LLM tool calling）。');
+              }
             } else if (evt.type === 'error') {
               renderAgentError(evt.message);
             }

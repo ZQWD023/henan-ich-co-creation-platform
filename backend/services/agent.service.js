@@ -9,6 +9,7 @@
 // 注：没有配置 QWEN_API_KEY 时，规划器使用规则决策（等价于一个确定性 Agent）；
 //     配置后同一套工具可直接交给大模型做 function calling，接口与 trace 结构不变。
 const { db } = require('../db/database');
+const config = require('../config');
 const { retrieve, toCitations } = require('./rag.service');
 
 /* ---------------- 工具定义（Function Calling Schema） ---------------- */
@@ -287,7 +288,7 @@ function parseGoal(goal, heritageId) {
  * @param {string} goal 用户目标，如"帮我把钧瓷做成一套文创产品"
  * @param {{heritageId?:string, onStep?:Function}} opts
  */
-async function run(goal, opts = {}) {
+async function runByRules(goal, opts = {}) {
   const { heritageId = null, onStep = null, pace = 220 } = opts;
   const trace = [];
   const started = Date.now();
@@ -369,7 +370,214 @@ async function run(goal, opts = {}) {
     citations: toCitations(hits),
     totalMs: Date.now() - started,
     toolCount: TOOLS.length,
+    meta: { planner: 'rules' },
   };
 }
 
-module.exports = { run, TOOLS, registry };
+/* ============================================================
+ * LLM 自主规划模式（OpenAI 兼容的 tool calling 循环）
+ *
+ * 规则模式（runByRules）保证"演示必可复现"；这一条保证"Agent 真的自己决定调哪个工具"。
+ * 通过环境变量切换：
+ *   AGENT_PLANNER=auto（默认） → 有 QWEN_API_KEY 走 LLM，否则走规则
+ *   AGENT_PLANNER=llm          → 强制 LLM（测试用，配合 __setTransport 注入假模型）
+ *   AGENT_PLANNER=rules        → 强制规则
+ * 任何失败（网络/超时/模型不听话/没产出方案）都自动回落规则模式，演示不会因此断掉。
+ * ============================================================ */
+
+const COMPAT_URL =
+  process.env.QWEN_COMPAT_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions';
+
+/** 测试注入点：替换真实 HTTP 调用（默认 null 表示用 fetch） */
+let transport = null;
+function __setTransport(fn) {
+  transport = fn;
+}
+
+const SYSTEM_PROMPT = [
+  '你是河南非物质文化遗产共创平台的规划助手。',
+  '你的任务：把用户一句话需求，变成一份可以直接发布到平台上的"共创项目方案"。',
+  '必须按顺序使用工具：search_heritage → get_heritage_detail → list_related_works → suggest_tasks → draft_project_brief。',
+  '规则：',
+  '1. 只能依据工具返回的真实数据，不要编造项目名、传承人、工艺步骤；',
+  '2. 最多调用 6 次工具；找到项目后不要重复检索；',
+  '3. draft_project_brief 的 angle 只能取：文创产品 / 内容传播 / 线下体验；',
+  '4. 工具链跑完后，用一句话总结方案要点（不超过 80 字）。',
+].join('\n');
+
+/** 内部工具定义 → OpenAI tools 格式 */
+function openAiTools() {
+  return TOOLS.map((t) => ({
+    type: 'function',
+    function: { name: t.name, description: t.description, parameters: t.parameters },
+  }));
+}
+
+async function defaultTransport(messages) {
+  const resp = await fetch(COMPAT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${config.qwenApiKey}` },
+    body: JSON.stringify({
+      model: config.qwenModel,
+      messages,
+      tools: openAiTools(),
+      tool_choice: 'auto',
+      temperature: 0.2,
+    }),
+    signal: AbortSignal.timeout(25000),
+  });
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const json = await resp.json();
+  const msg = json && json.choices && json.choices[0] && json.choices[0].message;
+  if (!msg) throw new Error('模型返回为空');
+  return msg;
+}
+
+async function runWithLLM(goal, opts = {}) {
+  const { heritageId = null, onStep = null } = opts;
+  const trace = [];
+  const started = Date.now();
+  const collect = { heritage: null, worksCount: 0, tasks: [], proposal: null, target: null };
+
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'user', content: String(goal) + (heritageId ? `\n（用户当前浏览的项目 id：${heritageId}）` : '') },
+  ];
+
+  const chat = transport || defaultTransport;
+
+  for (let round = 0; round < 6; round++) {
+    const msg = await chat(messages);
+    const toolCalls = msg.tool_calls || [];
+
+    if (!toolCalls.length) {
+      messages.push({ role: 'assistant', content: msg.content || '' });
+      break;
+    }
+
+    messages.push({ role: 'assistant', content: msg.content || '', tool_calls: toolCalls });
+
+    for (const tc of toolCalls) {
+      const name = tc.function && tc.function.name;
+      let args = {};
+      try {
+        args = JSON.parse((tc.function && tc.function.arguments) || '{}');
+      } catch (e) {
+        args = {};
+      }
+
+      const fn = registry[name];
+      const t0 = Date.now();
+      const out = fn ? fn(args) : { value: null, observation: '工具不存在：' + name };
+
+      const step = {
+        index: trace.length + 1,
+        thought: (msg.content || '').slice(0, 120) || `模型决定调用 ${name}`,
+        tool: name,
+        toolTitle: (TOOLS.find((t) => t.name === name) || {}).title || name,
+        args,
+        observation: out.observation,
+        durationMs: Date.now() - t0,
+        by: 'llm',
+      };
+      trace.push(step);
+      if (onStep) await onStep(step);
+
+      if (name === 'search_heritage' && Array.isArray(out.value) && out.value[0]) collect.target = out.value[0];
+      if (name === 'get_heritage_detail' && out.value) collect.heritage = out.value;
+      if (name === 'list_related_works' && Array.isArray(out.value)) collect.worksCount = out.value.length;
+      if (name === 'suggest_tasks' && Array.isArray(out.value)) collect.tasks = out.value;
+      if (name === 'draft_project_brief' && out.value) collect.proposal = out.value;
+
+      messages.push({
+        role: 'tool',
+        tool_call_id: tc.id || `call_${trace.length}`,
+        content: JSON.stringify(out.value === null || out.value === undefined ? { ok: false } : out.value).slice(0, 4000),
+      });
+    }
+  }
+
+  // 模型可能没走完工具链：缺什么补什么，保证结果结构完整
+  const fill = async (toolName, args, thought) => {
+    const fn = registry[toolName];
+    if (!fn) return null;
+    const t0 = Date.now();
+    const out = fn(args);
+    const step = {
+      index: trace.length + 1,
+      thought,
+      tool: toolName,
+      toolTitle: (TOOLS.find((t) => t.name === toolName) || {}).title || toolName,
+      args,
+      observation: out.observation,
+      durationMs: Date.now() - t0,
+      by: 'fallback',
+    };
+    trace.push(step);
+    if (onStep) await onStep(step);
+    return out.value;
+  };
+
+  if (!collect.heritage) {
+    const id = (collect.target && collect.target.id) || heritageId;
+    if (!id) {
+      return {
+        ok: false,
+        reason: 'no-match',
+        trace,
+        message: '模型没有找到匹配的非遗项目，请换个说法（例如"钧瓷""汴绣"）。',
+        meta: { planner: 'llm' },
+      };
+    }
+    collect.heritage = await fill('get_heritage_detail', { heritageId: id }, '模型未取详情，自动补齐项目信息');
+  }
+  if (!collect.tasks.length && collect.heritage) {
+    collect.tasks =
+      (await fill('suggest_tasks', { heritageId: collect.heritage.id, memberLimit: 6 }, '模型未拆任务，自动按工艺流程补齐')) || [];
+  }
+  if (!collect.proposal && collect.heritage) {
+    collect.proposal = await fill(
+      'draft_project_brief',
+      { heritageId: collect.heritage.id, angle: '文创产品' },
+      '模型未起草方案，自动补齐可发布的方案'
+    );
+  }
+  if (!collect.proposal) {
+    return { ok: false, reason: 'no-proposal', trace, message: '模型没有产出可用方案。', meta: { planner: 'llm' } };
+  }
+
+  const name = (collect.heritage && collect.heritage.name) || (collect.target && collect.target.name) || '';
+  const hits = retrieve(`${name} 文创`, { k: 3 });
+
+  return {
+    ok: true,
+    goal: String(goal).slice(0, 200),
+    heritage: collect.heritage,
+    worksCount: collect.worksCount,
+    tasks: collect.tasks,
+    proposal: collect.proposal,
+    trace,
+    citations: toCitations(hits),
+    totalMs: Date.now() - started,
+    toolCount: TOOLS.length,
+    meta: { planner: 'llm' },
+  };
+}
+
+/** 统一入口：按 AGENT_PLANNER 选择规划器，LLM 失败自动回落规则 */
+async function run(goal, opts = {}) {
+  const mode = (process.env.AGENT_PLANNER || 'auto').toLowerCase();
+  const useLLM = mode === 'llm' || (mode !== 'rules' && Boolean(config.qwenApiKey));
+
+  if (useLLM) {
+    try {
+      const result = await runWithLLM(goal, opts);
+      if (result && result.ok) return result;
+    } catch (e) {
+      // 静默回落：演示不能因为模型挂了而失败
+    }
+  }
+  return runByRules(goal, opts);
+}
+
+module.exports = { run, runByRules, runWithLLM, __setTransport, TOOLS, registry };
