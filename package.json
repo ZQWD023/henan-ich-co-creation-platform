@@ -24,7 +24,8 @@
     "deploy:check": "node tools/check-deploy.js",
     "reviewer": "npm --prefix backend run reviewer",
     "pre-submit": "node tools/pre-submit.js",
-    "fill": "node tools/fill-info.js"
+    "fill": "node tools/fill-info.js",
+    "video:script": "node tools/gen-video-script.js"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
