@@ -59,10 +59,17 @@ try {
   /* 不存在就算了 */
 }
 if (fs.existsSync(WORK)) fs.rmSync(WORK, { recursive: true, force: true });
+let base = '';
 try {
-  sh('git fetch origin gh-pages --depth=1');
-  sh('git worktree add -B gh-pages "' + WORK + '" origin/gh-pages');
+  base = sh('git rev-parse origin/gh-pages');
 } catch (e) {
+  base = '';
+}
+// 注意：这里**不能**用 git fetch --depth=1 —— 它会把本地仓库标记成浅克隆，
+// 导致 git log 只看到最近几次提交。gh-pages 每次都是整份重写，基线新旧无所谓。
+if (/^[0-9a-f]{40}$/.test(base)) {
+  sh('git worktree add -B gh-pages "' + WORK + '" ' + base);
+} else {
   sh('git worktree add -B gh-pages "' + WORK + '"');
 }
 
