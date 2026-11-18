@@ -120,17 +120,40 @@ cp .env.example .env      # Windows: copy .env.example .env
 npm start                 # 首次启动自动灌数据；访问 http://localhost:3000/
 ```
 
-环境变量（`backend/.env`，模板见 `.env.example`）：
+环境变量（`backend/.env`，模板见 `backend/.env.example`，内含逐项注释与生成命令）：
 
-| 变量 | 说明 |
-|---|---|
-| `PORT` | 服务端口，默认 3000 |
-| `JWT_SECRET` | **必须修改**为 32 位以上随机串 |
-| `QWEN_API_KEY` | 可选。填入后 AI 走通义千问；不填走平台知识库 |
-| `AUTO_OPEN_BROWSER` | 启动后是否自动开浏览器，默认 1 |
-| `AUTO_SETUP` | 首次是否自动灌数据，默认 1 |
+| 分类 | 变量 | 默认值 | 说明 |
+|---|---|---|---|
+| 服务 | `PORT` | `3000` | 后端端口（前后端同源，一般不改） |
+| | `NODE_ENV` | `development` | `production` 时静态资源启用长缓存 |
+| 安全 | `JWT_SECRET` | — | **必须修改**为 32 位以上随机串（生成命令在模板里） |
+| | `JWT_EXPIRES_IN` | `7d` | 登录态有效期 |
+| | `CORS_ORIGIN` | `*` | 允许来源，多个用逗号分隔；生产写死域名 |
+| | `RATE_LIMIT_MAX` | `600` | 15 分钟窗口内单 IP 最大请求数 |
+| 数据库 | `DATABASE_PATH` | 空 | SQLite 路径；留空 = 项目根 `database.sqlite` |
+| 上传 | `UPLOAD_DIR` | 空 | 上传目录；留空 = `backend/uploads` |
+| | `UPLOAD_MAX_BYTES` | `5242880` | 单文件上限（5 MB） |
+| 一键运行 | `AUTO_OPEN_BROWSER` | `1` | 启动后自动开浏览器 |
+| | `AUTO_SETUP` | `1` | 首次自动建表 + 灌非遗与演示数据 |
+| AI（可选） | `QWEN_API_KEY` | 空 | 填了走通义千问，不填走规则兜底 |
+| | `QWEN_MODEL` | `qwen-turbo` | `qwen-turbo` / `qwen-plus` / `qwen-max` |
+| | `QWEN_BASE_URL` | 空 | 自定义网关（默认阿里云官方地址） |
+| | `QWEN_COMPAT_URL` | 空 | OpenAI 兼容模式地址（中转/自建服务用） |
+| Agent | `AGENT_PLANNER` | `auto` | `auto` 有大模型 Key 用 LLM 规划、否则规则；`llm` / `rules` 强制 |
+| 评测脚本 | `EVAL_NO_WRITE` | 空 | `1` = 评测不覆盖写报告 |
+| | `SMOKE_BASE` | 空 | 冒烟测试目标地址前缀 |
 
+> 共 **18 个**环境变量，与代码里 `process.env` 的实际使用一一对应（模板与实际零差异）。
 > ⚠️ `.env` 已在 `.gitignore` 中，**密钥不会进入仓库**。
+
+**依赖清单**（评审可直接核对，均为公开包、无私有依赖）：
+
+| 位置 | 文件 | 内容 |
+|---|---|---|
+| 根目录 | `package.json` + `package-lock.json` | 开发工具：eslint / prettier / typescript（仅开发期，运行时不依赖） |
+| 后端 | `backend/package.json` + `backend/package-lock.json` | 运行依赖：express / better-sqlite3 / jsonwebtoken / bcryptjs / multer / express-rate-limit 等 |
+| 前端 | 无构建、无 npm 依赖 | 原生 ES Module + 本地 `js/`、`css/`；图标字体随仓库内置，不依赖外网 CDN |
+| 运行时 | `package.json` 的 `engines` | **Node.js ≥ 20**（`better-sqlite3` 需原生模块，装依赖时会自动编译） |
 
 ## 五、AI 能力一览（对应评分点）
 
@@ -165,13 +188,35 @@ npm run fill -- --school 学校 --group "B 组" --members "甲、乙" --teacher 
 > 说明：前端是**零构建**的原生 JS（部署时不需要 webpack/vite，评审拉下来就能跑）。
 > 我们通过 ESLint 规则约束质量，并在 `.eslintrc.json` 里说明了"前端脚本按顺序加载、跨文件共享全局"的取舍。
 
-## 七、接口文档
+## 七、开发过程（Git 记录，可逐条核对）
+
+本仓库保留**完整提交历史**（不 squash、不 force 覆盖），三条分支各司其职：
+
+| 分支 | 用途 | 提交数 |
+|---|---|---|
+| `main` | 主线开发 | 53 |
+| `gh-pages` | 线上静态演示站（GitHub Pages 读这个分支） | 36 |
+| `archive/2026-11-12-snapshot` | 重构前的早期版本快照（保留起点，便于对照） | 1 |
+
+关键时间线（`git log --oneline` 可直接复核）：
+
+| 时间 | 内容 |
+|---|---|
+| 2026-11-12 | 早期展示站完成（已归档在 `archive/2026-11-12-snapshot`，作为"重构前"基线） |
+| 2026-11-14 | 主线重构：工程化骨架 → RAG（BM25 + 四层加权 + 实体闸门）→ Agent 5 工具编排 → MCP 端点 → 端侧多模态 → 共创协作闭环 → 无障碍与性能优化 → 部署配置 |
+| 2026-11-16 | 演示视频逐字稿与提词器、答辩材料 |
+| 2026-11-18 | 提交包整理、源码包清理、自检脚本修正 |
+
+提交信息遵循约定式提交（`feat` / `fix` / `docs` / `chore` / `perf` / `test` / `ci`），
+数量分布：`feat` 22 · `chore` 12 · `docs` 9 · `fix` 5 · `style` 2 · `perf`/`test`/`ci` 各 1。
+
+## 八、接口文档
 
 - Swagger UI：<http://localhost:3000/api-docs>
 - OpenAPI 文件：`backend/docs/openapi.json`（40+ 接口）
 - MCP 端点自述：<http://localhost:3000/api/mcp>
 
-## 八、其他文档
+## 九、其他文档
 
 | 文档 | 用途 |
 |---|---|
@@ -180,7 +225,7 @@ npm run fill -- --school 学校 --group "B 组" --members "甲、乙" --teacher 
 | `演示视频脚本.md` | 6 分 30 秒分镜 + 录屏检查清单 |
 | `deploy/README.md` | Render / Docker / Nginx（含 SSE 不缓冲）部署说明 |
 
-## 九、团队信息
+## 十、团队信息
 
 | 项目 | 内容 |
 |---|---|
@@ -189,12 +234,12 @@ npm run fill -- --school 学校 --group "B 组" --members "甲、乙" --teacher 
 | 队员 | 刘雅馨、刘辰菲 |
 | 指导老师 | 彭伟国 |
 
-## 十、声明
+## 十一、声明
 
 - 非遗文字资料依据公开资料整理，用于教学与竞赛演示；传承人信息为示范性展示。
 - 封面照片来自公开图库/平台自有素材；如涉及版权请联系替换。
 - AI 生成内容均带标识，仅供参考。
 
-## 九、许可
+## 十二、许可
 
 MIT
